@@ -31,3 +31,14 @@ type carte_de_tarot =
     | Nombre of int * couleur_de_carte;;
 
 let le_petit = Atout 1;;
+
+let string_of_carte_de_tarot carte = match carte with
+    | Excuse        -> "Excuse"
+    | Atout i       -> string_of_int i ^ " d'atout"
+    | Roi c         -> "Roi de " ^ (couleur_to_string c)
+    | Dame c        -> "Dame de " ^ (couleur_to_string c)
+    | Cavalier c    -> "Cavalier de " ^ (couleur_to_string c)
+    | Valet c       -> "Valet de " ^ (couleur_to_string c)
+    | Nombre (i, c) -> (string_of_int i) ^ " de " ^ (couleur_to_string c);;
+
+string_of_carte_de_tarot le_petit;;
