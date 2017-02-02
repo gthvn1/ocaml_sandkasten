@@ -22,6 +22,7 @@ couleur_to_string une_couleur;;
 
 (* We can have a more complex union combined with product type (see the last one) *)
 type carte_de_tarot =
+    | Excuse
     | Atout of int
     | Roi of couleur_de_carte
     | Dame of couleur_de_carte
