@@ -26,6 +26,7 @@ type carte_de_tarot =
     | Roi of couleur_de_carte
     | Dame of couleur_de_carte
     | Cavalier of couleur_de_carte
+    | Valet of couleur_de_carte
     | Nombre of int * couleur_de_carte;;
 
 let le_petit = Atout 1;;
