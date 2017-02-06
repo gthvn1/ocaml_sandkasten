@@ -8,8 +8,6 @@
 (* Here is an example of sum type *)
 type couleur_de_carte = Trefle | Carreau | Coeur | Pique ;;
 
-type couleur_ou_erreur = Couleur of couleur_de_carte | Erreur ;;
-
 (* So we have a new sum type that is the union of singleton (the constructors)
  * and we can create a color like this *)
 let une_couleur:couleur_de_carte = Trefle;; (* Trefle is a constructor of type couleur_de_carte *)
@@ -30,10 +28,18 @@ type carte_de_tarot =
     | Valet of couleur_de_carte
     | Nombre of int * couleur_de_carte;;
 
+type couleur_ou_erreur =
+    | Couleur of couleur_de_carte
+    | Erreur ;;
+
+type 'a maybe =
+    | Some of 'a
+    | None ;;
+
 let get_couleur = function
-    | Excuse | Atout _                      -> Erreur
-    | Roi c | Dame c | Cavalier c | Valet c -> Couleur c
-    | Nombre (_,c)                          -> Couleur c;;
+    | Roi c | Dame c | Cavalier c | Valet c -> Some c
+    | Nombre (_,c)                          -> Some c
+    | _                                     -> None;;
 
 (* If we don't force the type to couleur_de_carte the following issue
  * can occurs:
@@ -41,13 +47,9 @@ let get_couleur = function
  *     # bool = true
  * It is not what we want.
  *)
-let est_couleur (couleur:couleur_de_carte) = function
-    | Roi      couleur      -> true
-    | Dame     couleur      -> true
-    | Cavalier couleur      -> true
-    | Valet    couleur      -> true
-    | Nombre   (_, couleur) -> true
-    | _                     -> false;;
+let est_couleur couleur carte = match get_couleur carte with
+    | Some couleur      -> true
+    | None              -> false;;
 
 let le_petit = Atout 1;;
 
@@ -63,3 +65,11 @@ let string_of_carte_de_tarot = function
 string_of_carte_de_tarot le_petit;;
 string_of_carte_de_tarot (Atout 5);;
 string_of_carte_de_tarot (Roi Trefle);;
+
+type ('a, 'b) succes_ou_erreur =
+    | Succes of 'a
+    | Erreur of 'b;;
+
+let division x y =
+    if y = 0 then Erreur "Division par zero"
+    else          Succes (x/y);;
