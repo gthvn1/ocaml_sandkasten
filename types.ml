@@ -30,10 +30,10 @@ type carte_de_tarot =
     | Valet of couleur_de_carte
     | Nombre of int * couleur_de_carte;;
 
-let get_couleur carte = match carte with
-    | Excuse | Atout _ -> Erreur
+let get_couleur = function
+    | Excuse | Atout _                      -> Erreur
     | Roi c | Dame c | Cavalier c | Valet c -> Couleur c
-    | Nombre (_,c) -> Couleur c;;
+    | Nombre (_,c)                          -> Couleur c;;
 
 (* If we don't force the type to couleur_de_carte the following issue
  * can occurs:
@@ -41,24 +41,24 @@ let get_couleur carte = match carte with
  *     # bool = true
  * It is not what we want.
  *)
-let est_couleur (couleur:couleur_de_carte) carte = match carte with
-    | Roi couleur         -> true
-    | Dame couleur        -> true
-    | Cavalier couleur    -> true
-    | Valet couleur       -> true
-    | Nombre (_, couleur) -> true
-    | _                   -> false;;
+let est_couleur (couleur:couleur_de_carte) = function
+    | Roi      couleur      -> true
+    | Dame     couleur      -> true
+    | Cavalier couleur      -> true
+    | Valet    couleur      -> true
+    | Nombre   (_, couleur) -> true
+    | _                     -> false;;
 
 let le_petit = Atout 1;;
 
-let string_of_carte_de_tarot carte = match carte with
-    | Excuse        -> "Excuse"
-    | Atout i       -> string_of_int i ^ " d'atout"
-    | Roi c         -> "Roi de " ^ (couleur_to_string c)
-    | Dame c        -> "Dame de " ^ (couleur_to_string c)
-    | Cavalier c    -> "Cavalier de " ^ (couleur_to_string c)
-    | Valet c       -> "Valet de " ^ (couleur_to_string c)
-    | Nombre (i, c) -> (string_of_int i) ^ " de " ^ (couleur_to_string c);;
+let string_of_carte_de_tarot = function
+    | Excuse          -> "Excuse"
+    | Atout    i      -> string_of_int i ^ " d'atout"
+    | Roi      c      -> "Roi de " ^ (couleur_to_string c)
+    | Dame     c      -> "Dame de " ^ (couleur_to_string c)
+    | Cavalier c      -> "Cavalier de " ^ (couleur_to_string c)
+    | Valet    c      -> "Valet de " ^ (couleur_to_string c)
+    | Nombre   (i, c) -> (string_of_int i) ^ " de " ^ (couleur_to_string c);;
 
 string_of_carte_de_tarot le_petit;;
 string_of_carte_de_tarot (Atout 5);;
