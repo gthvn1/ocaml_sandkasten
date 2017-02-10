@@ -30,3 +30,23 @@ let operation_sur_liste_gauche f init =
         | ListeVide                 -> acc
         | ListeNonVide (head, tail) -> aux (f head acc) tail
     in aux init;;
+
+let est_vide = function
+    | [] -> true
+    | _  -> false;;
+
+(* It doesn't cover the case of the empty list *)
+let rec dernier = function
+    | h :: [] -> h
+    | h :: tail  -> dernier tail;;
+
+(* It doesn't cover the case of the empty list and singleton *)
+let rec avant_dernier = function
+    | a :: b :: [] -> a
+    | a :: tail  -> avant_dernier tail;;
+
+let inverse l =
+    let rec f newl = function
+        | []           -> newl
+        | head :: tail -> f (head::newl) tail
+    in f [] l;;
