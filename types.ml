@@ -109,15 +109,17 @@ let rec evalue arbre = match arbre with
         | (Booleen _    , Booleen false) -> Booleen false
         | (Booleen true , x            ) -> x
         | (x            , Booleen true ) -> x
-        | (f', g') -> (match g' with   (* This part is in progress and not working yet *)
-            | Non f' -> Booleen false
-            | _      ->  Et (f',g')))
+        | (x            , Non y        ) -> if x = y then Booleen false
+                                            else          Et (x, y)
+        | (x            , y            ) -> Et (x, y))
     | Ou (f, g) -> (match (evalue f, evalue g) with
         | (Booleen false, x            ) -> x
         | (x            , Booleen false) -> x
         | (Booleen true , _            ) -> Booleen true
         | (_            , Booleen true ) -> Booleen true
-        | (f', g')                       -> Ou (f',g'))
+        | (x            , Non y        ) -> if x = y then Booleen true
+                                            else          Ou (x, y)
+        | (x            , y)             -> Ou (x, y))
     | Non f -> (match (evalue f) with
         | Booleen false -> Booleen true
         | Booleen true  -> Booleen false
@@ -127,5 +129,5 @@ let rec evalue arbre = match arbre with
         | (_            , Booleen true ) -> Booleen true
         | (Booleen false, _            ) -> Booleen true
         | (Booleen true , Booleen false) -> Booleen false
-        | (f', g')                      -> Implique (f', g'));;
+        | (x, y)                         -> Implique (x, y));;
 
