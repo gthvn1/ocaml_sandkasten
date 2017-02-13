@@ -131,3 +131,17 @@ let rec evalue arbre = match arbre with
         | (Booleen true , Booleen false) -> Booleen false
         | (x, y)                         -> Implique (x, y));;
 
+(*
+ * Si on remplace "Booleen valeur" par valeur la fonction sera alors de
+ * type: bytes -> formule -> formule -> formule au lieu de
+ *       bytes -> bool -> formule -> formule
+ * Elle acceptera donc n'importe quelle formule et non simplement un booleen.
+ *)
+let rec substitue nom valeur arbre = match arbre with
+    | Variable v      -> if v = nom then Booleen valeur
+                         else            Variable v
+    | Booleen _       -> arbre
+    | Et (f, g)       -> Et (substitue nom valeur f, substitue nom valeur g)
+    | Ou (f, g)       -> Ou (substitue nom valeur f, substitue nom valeur g)
+    | Non f           -> Non (substitue nom valeur f)
+    | Implique (f, g) -> Implique (substitue nom valeur f, substitue nom valeur g);;
