@@ -73,3 +73,59 @@ type ('a, 'b) succes_ou_erreur =
 let division x y =
     if y = 0 then Erreur "Division par zero"
     else          Succes (x/y);;
+
+(*
+ * Let's play with boolean logique
+ *)
+
+type formule =
+    | Booleen  of bool
+    | Variable of string
+    | Et       of formule * formule
+    | Ou       of formule * formule
+    | Non      of formule
+    | Implique of formule * formule;;
+
+(*
+ * formule XOR
+ *
+ * Rappel:  a | b | xor
+ *          -----------
+ *          0 | 0 | 0
+ *          0 | 1 | 1
+ *          1 | 0 | 1
+ *          1 | 1 | 0
+ *
+ * Et donc on peut l'exprimer en disant: (a ou b) et (non (a et b))
+ *)
+
+let formule_xor a b = Et (Ou (a, b), Non (Et (a, b)));;
+
+let rec evalue arbre = match arbre with
+    | Booleen _  -> arbre
+    | Variable _ -> arbre
+    | Et (f, g) -> (match (evalue f, evalue g) with
+        | (Booleen false, _            ) -> Booleen false
+        | (Booleen _    , Booleen false) -> Booleen false
+        | (Booleen true , x            ) -> x
+        | (x            , Booleen true ) -> x
+        | (f', g') -> (match g' with   (* This part is in progress and not working yet *)
+            | Non f' -> Booleen false
+            | _      ->  Et (f',g')))
+    | Ou (f, g) -> (match (evalue f, evalue g) with
+        | (Booleen false, x            ) -> x
+        | (x            , Booleen false) -> x
+        | (Booleen true , _            ) -> Booleen true
+        | (_            , Booleen true ) -> Booleen true
+        | (f', g')                       -> Ou (f',g'))
+    | Non f -> (match (evalue f) with
+        | Booleen false -> Booleen true
+        | Booleen true  -> Booleen false
+        | Non x         -> x
+        | x             -> Non x)
+    | Implique (f, g) -> (match (evalue f, evalue g) with
+        | (_            , Booleen true ) -> Booleen true
+        | (Booleen false, _            ) -> Booleen true
+        | (Booleen true , Booleen false) -> Booleen false
+        | (f', g')                      -> Implique (f', g'));;
+
