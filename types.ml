@@ -155,9 +155,33 @@ let rec substitue nom valeur arbre =
     | Et (f, g)       -> Et (substitue nom valeur f, substitue nom valeur g)
     | Ou (f, g)       -> Ou (substitue nom valeur f, substitue nom valeur g)
     | Non f           -> Non (substitue nom valeur f)
-    | Implique (f, g) -> Implique (substitue nom valeur f, substitue nom valeur g);;
+    | Implique (f, g) -> Implique (substitue nom valeur f, substitue nom valeur g)
+;;
 
 
-type point2d = {x: float; y: float};;
-type circle_desc = { center: point2d; radius: float };;
+(* A record type - like a tuple with named fields *)
+type point2d = {
+    x: float;
+    y: float;
+};;
+
+(* On peut définir un point *)
+let pt1 = {
+    x = 3.;
+    y = 4.;
+};;
+
+(* Et le calcul de la magnitude *)
+
+type circle_desc = {
+    center: point2d;
+    radius: float;
+};;
+
+type rect_desc = {
+    lower_left: point2d;
+    height: float;
+    weight: float;
+};;
+
 
