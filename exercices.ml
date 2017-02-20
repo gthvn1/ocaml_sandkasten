@@ -70,3 +70,13 @@ let fiboT n =
 let rec nb_chiffre n = match (n/10) with
   | 0 -> 1
   | _ -> 1 + nb_chiffre (n/10)
+
+(*****************************************************************************
+ * EXO 6
+ * Fonction Puissance qui renvoie x a la puissance y.
+ *)
+let puissance x y =
+  let rec inner_puissance res x n = match n with
+    | 0 -> res
+    | _ -> inner_puissance (res * x) x (n - 1)
+  in inner_puissance 1 x y
