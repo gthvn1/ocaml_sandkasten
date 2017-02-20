@@ -2,7 +2,7 @@
 
 (*****************************************************************************
  * EXO 1
- * Calculer la somme de deux entiers en récursif (Classique et Terminale).
+ * Calculer la somme de deux entiers en recursif (Classique et Terminale).
  * On suppose que a et b sont positifs.
  *)
 let rec sommeC a = function
@@ -18,7 +18,7 @@ let sommeT a b =
 
 (*****************************************************************************
  * EXO 2
- * Calculer le produit de deux entiers en récursif (Classique et Terminale).
+ * Calculer le produit de deux entiers en recursif (Classique et Terminale).
  * On suppose que a et b sont positifs.
  *)
 let rec produitC a b = match a with
@@ -62,3 +62,11 @@ let fiboT n =
     | x -> inner_fibo b (a+b) (x-1)
   in
     inner_fibo 0 1 n
+
+(*****************************************************************************
+ * EXO 5
+ * Nombre de chiffres dans un nombre
+ *)
+let rec nb_chiffre n = match (n/10) with
+  | 0 -> 1
+  | _ -> 1 + nb_chiffre (n/10)
