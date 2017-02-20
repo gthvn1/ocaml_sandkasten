@@ -45,7 +45,7 @@ let pgcd =
   in
     inner_pgcd
 
- (*****************************************************************************
+(*****************************************************************************
  * EXO 4
  * Fibonacci:  fibo(n)=fibo(n-1)+fibo(n-2)
  *)
@@ -53,3 +53,12 @@ let rec fibo = function
     | 0 -> 0
     | 1 -> 1
     | n -> fibo (n-2) + fibo (n-1)
+
+(* La version terminale beaucoup plus performante *)
+let fiboT n =
+  let rec inner_fibo a b = function
+    | 0 -> a
+    | 1 -> b
+    | x -> inner_fibo b (a+b) (x-1)
+  in
+    inner_fibo 0 1 n
