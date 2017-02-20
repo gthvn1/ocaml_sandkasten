@@ -44,3 +44,12 @@ let pgcd =
     else inner_pgcd b (a mod b)
   in
     inner_pgcd
+
+ (*****************************************************************************
+ * EXO 4
+ * Fibonacci:  fibo(n)=fibo(n-1)+fibo(n-2)
+ *)
+let rec fibo = function
+    | 0 -> 0
+    | 1 -> 1
+    | n -> fibo (n-2) + fibo (n-1)
