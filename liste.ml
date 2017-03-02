@@ -50,3 +50,10 @@ let inverse l =
         | []           -> newl
         | head :: tail -> f (head::newl) tail
     in f [] l;;
+
+let rec desutter l =
+    match l with
+    | [] | [_] as l -> l
+    | hd :: (hd' :: _ as tl) when hd = hd' -> desutter tl
+    | hd :: tl -> hd :: desutter tl
+;;
