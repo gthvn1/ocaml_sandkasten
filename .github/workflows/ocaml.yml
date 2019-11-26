@@ -1,0 +1,16 @@
+name: Setup OCaml
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ocaml-version: ['4.09.0', '4.08.1']
+    steps:
+    - uses: actions/checkout@master
+    - uses: avsm/setup-ocaml@master
+      with:
+        ocaml-version: ${{ matrix.ocaml-version }}
+    - run: ocamlc -c dico.ml
