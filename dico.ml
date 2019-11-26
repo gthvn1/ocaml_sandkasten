@@ -62,5 +62,10 @@ module DicoTree : DicoSig = struct
 
 end;;
 
+(*
+ * Note that as the lookup of d2r2 will raise an exception when evaluating
+ * the ForceArchive module, Client1 and Client2 won't be binded. Remove the
+ * lookup of d2r2 to be able to do things like: Client1.force ;;
+ *)
 module Client1 = ForceArchive(DicoList)
 module Client2 = ForceArchive(DicoTree)
