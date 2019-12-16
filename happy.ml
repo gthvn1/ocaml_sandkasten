@@ -48,6 +48,6 @@ let rec string_to_list_of_digits ch = match ch with
 | _ -> (digit_of_char (String.get ch 0)) ::
 (string_to_list_of_digits (String.sub ch 1 ((String.length ch) - 1)));;
 
-
+List.fold_left (fun x y -> x + y*y) 0 (string_to_list_of_digits "123");;
 *)
 
