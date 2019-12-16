@@ -20,5 +20,34 @@ let print_is_happy a =
     if is_happy a then print_endline " :)"
                   else print_endline " :(";;
 
-let () =
-		print_is_happy 32;
+(*
+ * This works for small number but there is an issue with number
+ * like 8773540098233661513.
+ * For this we will try another approach
+ * - transforme a string to a list of int
+ *    "8773540098233661513" -> [8; 7; 7; ... 3] -> 
+ * - fold the list to get the sum of square integers
+ 
+exception Not_a_digit;;
+
+let digit_of_char = function
+| '1' -> 1
+| '2' -> 2
+| '3' -> 3
+| '4' -> 4
+| '5' -> 5
+| '6' -> 6
+| '7' -> 7
+| '8' -> 8
+| '9' -> 9
+| '0' -> 0
+| _ -> raise Not_a_digit;;
+
+let rec string_to_list_of_digits ch = match ch with
+| "" -> []
+| _ -> (digit_of_char (String.get ch 0)) ::
+(string_to_list_of_digits (String.sub ch 1 ((String.length ch) - 1)));;
+
+
+*)
+
