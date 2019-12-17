@@ -13,4 +13,4 @@ jobs:
     - uses: avsm/setup-ocaml@master
       with:
         ocaml-version: ${{ matrix.ocaml-version }}
-    - run: ocamlc -c dico.ml
+    - run: ocamlc -c happy.ml

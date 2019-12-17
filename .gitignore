@@ -1,2 +1,4 @@
 .gitignore
 _build
+*.cmi
+*.cmo
