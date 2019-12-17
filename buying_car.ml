@@ -27,12 +27,15 @@
  *
  * etc...
  *)
+
+let frnd f = int_of_float (floor (f +. 0.5));;
+
 let rec nb_months (startPriceOld: float) (startPriceNew: float) (savingperMonth: float) (percentLossByMonth: float) =
   let rec aux nbMonths priceOld priceNew perMonth lost =
     let needsToPay = (priceOld +. perMonth) -. priceNew in
     let newlost = if nbMonths mod 2 = 1 then lost +. 0.5 else lost in
     let lostPercent = (100. -. newlost) /. 100. in
-    if needsToPay >= 0.0 then (nbMonths, needsToPay)
+    if needsToPay >= 0.0 then (nbMonths, frnd needsToPay)
     else aux (nbMonths + 1) (priceOld *. lostPercent) (priceNew *. lostPercent) (perMonth +. savingperMonth) newlost in
   aux 0 startPriceOld startPriceNew 0.0 percentLossByMonth ;;
 
