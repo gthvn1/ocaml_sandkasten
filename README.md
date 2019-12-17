@@ -5,8 +5,8 @@
 My [OCaml](https://ocaml.org/) playground.
 
 Most of exercices are taken from:
-- [coding game](www.codingame.com) and
-- [code wars](https://www.codewars.com). 
+- [coding game](www.codingame.com)
+- [code wars](https://www.codewars.com)
 
 ## Easy Puzzles
 
