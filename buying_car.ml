@@ -28,6 +28,8 @@
  * etc...
  *)
 
+(* To compile: ocamlfind ocamlopt -o buying_car -linkpkg  -package ounit2 buying_car.ml *)
+(* IMPLEMENTATION *)
 let frnd f = int_of_float (floor (f +. 0.5));;
 
 let rec nb_months (startPriceOld: float) (startPriceNew: float) (savingperMonth: float) (percentLossByMonth: float) =
@@ -39,37 +41,31 @@ let rec nb_months (startPriceOld: float) (startPriceNew: float) (savingperMonth:
     else aux (nbMonths + 1) (priceOld *. lostPercent) (priceNew *. lostPercent) (perMonth +. savingperMonth) newlost in
   aux 0 startPriceOld startPriceNew 0.0 percentLossByMonth ;;
 
-(*
-module Tests = struct
-    open OUnit
-    open Printf
+(* UNIT TEST *)
+open OUnit2
+open Printf
 
-    let testing(startPriceOld: float) (startPriceNew: float) (savingperMonth: float) (percentLossByMonth: float) (expectedOutput: int * int) =
-      let act = nb_months startPriceOld startPriceNew savingperMonth percentLossByMonth in
-        print_string "input "; print_float startPriceOld; print_string "\n";
-        print_float startPriceNew;
-        print_string "\n";
-        print_float savingperMonth;
-        print_string "\n";
-        print_float percentLossByMonth;
-        print_string "\n";
-        print_string "Expected "; print_int (fst expectedOutput); print_string(" "); print_int (snd expectedOutput); print_endline "\n got ";
-        print_int (fst act); print_string(" "); print_int (snd act); print_endline "\n-----"; print_endline "";
-        assert_equal expectedOutput act;;
+let testing(startPriceOld: float) (startPriceNew: float) (savingperMonth: float) (percentLossByMonth: float) (expectedOutput: int * int) =
+  let act = nb_months startPriceOld startPriceNew savingperMonth percentLossByMonth in
+  print_string "input ";
+  print_float startPriceOld; print_string " ";
+  print_float startPriceNew; print_string " ";
+  print_float savingperMonth; print_string " ";
+  print_float percentLossByMonth; print_string "\n";
+  print_string "Expected "; print_int (fst expectedOutput); print_string(" "); print_int (snd expectedOutput);
+  print_string "\n got "; print_int (fst act); print_string(" "); print_int (snd act);
+  print_endline "\n";
+  assert_equal expectedOutput act;;
 
-    let suite = [
-        "nb_months" >:::
-            [
-              "Basic tests" >:: (fun _ ->
-                  testing 2000.0 8000.0 1000.0 1.5 (6,766);
-                  testing 12000.0 8000.0 1000.0 1.5 (0,4000);
-                  testing 18000.0 32000.0 1500.0 1.25 (8,332);
-                  testing 7500.0 32000.0 300.0 1.55 (25,122);
+let suite =
+  "nb_months" >::: [
+    "Basic tests" >:: (fun _ ->
+        testing 2000.0 8000.0 1000.0 1.5 (6,766);
+        testing 12000.0 8000.0 1000.0 1.5 (0,4000);
+        testing 18000.0 32000.0 1500.0 1.25 (8,332);
+        testing 7500.0 32000.0 300.0 1.55 (25,122);
+      );
+  ];;
 
-                );
-
-            ]
-        ]
-    ;;
-end
-*)
+let () =
+  run_test_tt_main suite
