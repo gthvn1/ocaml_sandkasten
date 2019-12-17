@@ -1,7 +1,12 @@
-# Ocaml Kindergarten
+# OCaml Kindergarten
 
-Keep track of activities around OCaml like [coding game](www.codingame.com) and
-[code wars](https://www.codewars.com). 
+![OCaml LoGo](https://ocaml.org/img/colour-logo-white.svg)
+
+My [OCaml](https://ocaml.org/) playground.
+
+Most of exercices are taken from:
+- [coding game](www.codingame.com) and
+- [code wars](https://www.codewars.com). 
 
 ## Easy Puzzles
 
