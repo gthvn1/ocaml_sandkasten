@@ -1,13 +1,12 @@
 # Ocaml Kindergarten
 
-Keep track of activities around OCaml like coding game www.codingame.com.
-
-We are following this [tutorial](https://fr.wikibooks.org/wiki/Objective_Caml)
-and also using the [Real World OCaml](https://realworldocaml.org/) book.
+Keep track of activities around OCaml like [coding game](www.codingame.com) and
+[code wars](https://www.codewars.com). 
 
 ## Easy Puzzles
 
 - **happy_numbers**: Some numbers are happy.
+- **buying_car**: compute the time to wait before buying a new car.
 
 ## Medium Puzzles
 
