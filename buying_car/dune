@@ -1,0 +1,4 @@
+(executable
+ (name buying_car)
+ (libraries ounit2)
+)
