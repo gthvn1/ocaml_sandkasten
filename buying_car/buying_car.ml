@@ -32,7 +32,7 @@
 (* IMPLEMENTATION *)
 let frnd f = int_of_float (floor (f +. 0.5));;
 
-let rec nb_months (startPriceOld: float) (startPriceNew: float) (savingperMonth: float) (percentLossByMonth: float) =
+let nb_months (startPriceOld: float) (startPriceNew: float) (savingperMonth: float) (percentLossByMonth: float) =
   let rec aux nbMonths priceOld priceNew perMonth lost =
     let needsToPay = (priceOld +. perMonth) -. priceNew in
     let newlost = if nbMonths mod 2 = 1 then lost +. 0.5 else lost in
@@ -43,7 +43,6 @@ let rec nb_months (startPriceOld: float) (startPriceNew: float) (savingperMonth:
 
 (* UNIT TEST *)
 open OUnit2
-open Printf
 
 let testing(startPriceOld: float) (startPriceNew: float) (savingperMonth: float) (percentLossByMonth: float) (expectedOutput: int * int) =
   let act = nb_months startPriceOld startPriceNew savingperMonth percentLossByMonth in
