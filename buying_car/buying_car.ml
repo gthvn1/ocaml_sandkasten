@@ -52,7 +52,7 @@ let testing(startPriceOld: float) (startPriceNew: float) (savingperMonth: float)
   print_float savingperMonth; print_string " ";
   print_float percentLossByMonth; print_string "\n";
   print_string "Expected "; print_int (fst expectedOutput); print_string(" "); print_int (snd expectedOutput);
-  print_string "\n got "; print_int (fst act); print_string(" "); print_int (snd act);
+  print_string "\nGot      "; print_int (fst act); print_string(" "); print_int (snd act);
   print_endline "\n";
   assert_equal expectedOutput act;;
 
