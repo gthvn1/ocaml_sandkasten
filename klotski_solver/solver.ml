@@ -1,6 +1,76 @@
-grade_only [1;2;3;4;5;6;7] ;;
+exception NotFound
 
-let rec loop p f x = if p x then x else loop p f (f x);;
+type 'a rel = 'a -> 'a list
+
+type 'a prop = 'a -> bool
+
+type ('a, 'set) set_operations = {
+  empty : 'set;             (* The empty set *)
+  mem: 'a -> 'set -> bool;  (* [mem x s = true] iff [x] is in [s]. *)
+  add: 'a -> 'set -> 'set;  (* [add x s] is the set [s] union {x} *)
+}
+
+type ('configuration, 'move) puzzle = {
+  move: 'configuration -> 'move -> 'configuration;
+  possible_moves: 'configuration -> 'move list;
+  final: 'configuration -> bool;
+}
+
+(* Pieces on the board can be designated as:
+ *   - the one 2x2 square: S
+ *   - the one 2x1 horizontal rectangle: H
+ *   - the four 1x2 vertical rectangle: V0, V1, V2, V3
+ *   - the four 1x1 squares: C0, C1, C2, C3
+ *)
+type piece_kind = S | H | V | C | X
+
+type piece = piece_kind * int
+
+let x = (X, 0) and s = (S, 0) and h = (H, 0)
+
+let (v0, v1, v2, v3) = ((V, 0), (V, 1), (V, 2), (V, 3))
+
+let (c0, c1, c2, c3) = ((C, 0), (C, 1), (C, 2), (C, 3))
+
+let all_pieces = [x; s; h; v0; v1; v2; v3; c0; c1; c2; c3]
+
+type board = (piece array) array
+
+let initial_board =
+  [|
+    [| v0; s ; s ; v1 |];
+    [| v0; s ; s ; v1 |];
+    [| v2; h ; h ; v3 |];
+    [| v2; c0; c1; v3 |];
+    [| c2; x ; x ; c3 |];
+  |]
+
+let initial_board_simpler =
+  [|
+    [| c0; s ; s ; c2 |];
+    [| c1; s ; s ; c3 |];
+    [| v0; v1; v2; v3 |];
+    [| v0; v2; v3; v3 |];
+    [| x ; x ; x ; x  |];
+  |]
+
+let initial_board_trival =
+  [|
+    [| x; s; s; x|];
+    [| x; s; s; x|];
+    [| x; x; x; x|];
+    [| x; x; x; x|];
+    [| x; x; x; x|];
+  |]
+
+(* let's use a record for direction *)
+type direction = {dcol: int; drow: int}
+
+type move = Move of piece * direction * board
+
+let move _ (Move (_, _, b)) = b
+
+let rec loop p f x = if p x then x else loop p f (f x)
 
 let rec exists p = function
   | [] -> false
