@@ -1,6 +1,5 @@
 name: Test Klotski
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -8,11 +7,10 @@ jobs:
       matrix:
         ocam-version: ['4.09.0', '4.08.1' ]
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@master
     - uses: avsm/setup-ocaml@master
       with:
         ocaml-version: ${{ matrix.ocaml-version }}
     - name: Run Klotski inline test
       working-directory: klotski_solver
-      run: |
-          opam exec -- dune runtest
+      run: dune runtest

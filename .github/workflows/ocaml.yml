@@ -1,7 +1,5 @@
 name: Setup OCaml
-
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
