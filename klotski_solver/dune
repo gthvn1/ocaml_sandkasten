@@ -1,4 +1,5 @@
-(executable
- (name main)
- (libraries alcotest)
+(library
+ (name koltski)
+ (inline_tests)
+ (preprocess (pps ppx_inline_test))
 )

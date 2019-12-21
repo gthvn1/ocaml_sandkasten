@@ -84,6 +84,8 @@ let rec find p = function
 
 let near x = [x - 2; x - 1; x; x + 1; x + 2] ;;
 
+let%test _ = near 2 = [0; 1; 2; 3; 4]
+
 let rec flat_map r = function
   | [] -> []
   | x::xs -> (r x) @ (flat_map r xs)
