@@ -13,4 +13,4 @@ jobs:
         ocaml-version: ${{ matrix.ocaml-version }}
     - name: Run Klotski inline test
       working-directory: klotski_solver
-      run: dune runtest
+      run: opam exec -- dune runtest
