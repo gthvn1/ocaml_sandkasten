@@ -70,6 +70,7 @@ type move = Move of piece * direction * board
 
 let move _ (Move (_, _, b)) = b
 
+(* Some useful basic fonctions *)
 let rec loop p f x = if p x then x else loop p f (f x)
 
 let rec exists p = function
@@ -83,8 +84,6 @@ let rec find p = function
 (* --- Part A: A Generic Problem Solver --- *)
 
 let near x = [x - 2; x - 1; x; x + 1; x + 2] ;;
-
-let%test _ = near 2 = [0; 1; 2; 3; 4]
 
 let rec flat_map r = function
   | [] -> []
