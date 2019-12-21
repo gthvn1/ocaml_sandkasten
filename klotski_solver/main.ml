@@ -8,11 +8,19 @@
  *   dune build main.exe
  *)
 
-let onePiece = Klotski.S
+(* List of Tests *)
+let test_near0 () =
+  Alcotest.(check (list int)) "same lists" [-2; -1; 0; 1; 2] (Klotski.near 0)
 
-let () = match onePiece with
-  | Klotski.S -> print_endline "It is a square"
-  | Klotski.H -> print_endline "It is an horizontal rectangle"
-  | Klotski.V -> print_endline "It is a vertical rectangle"
-  | Klotski.C -> print_endline "It s a little square"
-  | Klotski.X -> print_endline "It is an empty space"
+let test_near2 () =
+  Alcotest.(check (list int)) "same lists" [0; 1; 2; 3; 4] (Klotski.near 2)
+
+(* Run tests *)
+let () =
+  let open Alcotest in
+  run "Utils" [
+    "near", [
+      test_case "near 0" `Quick test_near0;
+      test_case "near 2" `Quick test_near2;
+    ];
+  ]
