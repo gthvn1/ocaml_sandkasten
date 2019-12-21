@@ -4,8 +4,8 @@
  *   ocamlopt -c main.ml
  *   ocamlopt -o solver klotski.cmo main.cmo
  *
- * or:
- *   dune build main.exe
+ * or if you want to run the tests:
+ *   dune runtest
  *)
 
 let onePiece = Klotski.S
