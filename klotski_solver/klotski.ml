@@ -90,7 +90,7 @@ let rec flat_map r = function
 
 let rec iter_rel (rel:'a rel) (n:int) : 'a rel = fun x -> match n with
   | 0  -> [x]
-  | n' -> flat_map rel (iter_rel rel (n - 1) x)
+  | n -> flat_map rel (iter_rel rel (n - 1) x)
 
 let solve (r:'e rel) (p:'e prop) (x:'e) =
   let rec solve' r p l =
@@ -102,6 +102,9 @@ let solve (r:'e rel) (p:'e prop) (x:'e) =
     | Some x -> x
   in
   solve' r p [x]
+
+(*
+ * TODO: Implement the following function
 
 let solve_path r p x =
   "Replace this string with your implementation." ;;
@@ -137,3 +140,5 @@ module BoardSet = Set.Make (struct
 
 let solve_klotski initial_board =
   "Replace this string with your implementation." ;;
+
+*)
