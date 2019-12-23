@@ -46,3 +46,7 @@ let%test _ =
 let%test _ =
   let deep2 = Klotski.iter_rel Klotski.near 2 in
   deep2 0 = [-4; -3; -2; -1; 0; -3; -2; -1; 0; 1; -2; -1; 0; 1; 2; -1; 0; 1; 2; 3; 0; 1; 2; 3; 4]
+
+(* Test solve:
+ *)
+let%test _ = Klotski.solve Klotski.near (fun x -> x = 12) 0 = 12
