@@ -50,3 +50,5 @@ let%test _ =
 (* Test solve:
  *)
 let%test _ = Klotski.solve Klotski.near (fun x -> x = 12) 0 = 12
+
+let%test _ = Klotski.solve_path Klotski.near (fun x -> x = 12) 0 = [0; 2; 4; 6; 8; 10; 12]

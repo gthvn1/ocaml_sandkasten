@@ -94,21 +94,23 @@ let rec iter_rel (rel:'a rel) (n:int) : 'a rel = fun x -> match n with
   | n -> flat_map rel (iter_rel rel (n - 1) x)
 
 let solve (r:'e rel) (p:'e prop) (x:'e) =
-  let rec solve' r p l =
-    let rec find_solution = function
-      | [] -> None
-      | x::xs -> if p x then Some x else find_solution xs in
-    match find_solution l with
-    | None -> solve' r p (flat_map r l)
-    | Some x -> x
+  let rec aux l =
+    if exists p l then find p l
+    else aux (flat_map r l)
   in
-  solve' r p [x]
+  aux [x]
+
+let solve_path r p x =
+  let r' = function
+    | [] -> []
+    | x::xs -> List.map (fun y -> y::x::xs) (r x) in
+  let p' = function
+    | [] -> false
+    | x::_ -> p x in
+  List.rev (solve r' p' [x])
 
 (*
  * TODO: Implement the following function
-
-let solve_path r p x =
-  "Replace this string with your implementation." ;;
 
 let archive_map opset r (s, l) =
   "Replace this string with your implementation." ;;
