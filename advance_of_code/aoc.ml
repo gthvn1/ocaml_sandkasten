@@ -19,8 +19,10 @@ exception Exit
 
 let () =
   let executed_code = Day2.execute prog5 12 2 in
-  print_string "Day1 > ";
-  print_endline (Day1.totalFuel "input_day1.data");
+  print_string "Day1 > fuel needed ";
+  print_endline (Day1.total_fuel "input_day1.data");
+  print_string "     > real fuel needed ";
+  print_endline (Day1.real_total_fuel "input_day1.data");
   print_string "Day2 > ";
   print_int executed_code.(0);
   print_newline ();
