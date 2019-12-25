@@ -120,11 +120,15 @@ let archive_map opset r (s, l) =
   let l' = build_l (flat_map r l) in
   (build_s l', l')
 
+let solve' opset r p x =
+  let rec aux (s, l) =
+    if exists p l then find p l
+    else aux (archive_map opset r (s, l))
+  in
+  aux (opset.empty, [x])
+
 (*
  * TODO: Implement the following function
-
-let solve' opset r p x =
-  "Replace this string with your implementation." ;;
 
 let solve_path' opset r p x =
   "Replace this string with your implementation." ;;
