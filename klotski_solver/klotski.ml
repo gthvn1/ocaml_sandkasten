@@ -127,11 +127,17 @@ let solve' opset r p x =
   in
   aux (opset.empty, [x])
 
+let solve_path' opset r p x =
+  let r' = function
+    | [] -> []
+    | x::xs -> List.map (fun y -> y::x::xs) (r x) in
+  let p' = function
+    | [] -> false
+    | x::_ -> p x in
+  List.rev (solve' opset r' p' [x])
+
 (*
  * TODO: Implement the following function
-
-let solve_path' opset r p x =
-  "Replace this string with your implementation." ;;
 
 let solve_puzzle p opset c =
   "Replace this string with your implementation." ;;
