@@ -109,11 +109,19 @@ let solve_path r p x =
     | x::_ -> p x in
   List.rev (solve r' p' [x])
 
+let archive_map opset r (s, l) =
+  let rec build_l = function
+    | [] -> []
+    | x::xs -> if opset.mem x s then build_l xs
+      else x::(build_l xs) in
+  let rec build_s = function
+    | [] -> s
+    | x::xs -> opset.add x (build_s xs) in
+  let l' = build_l (flat_map r l) in
+  (build_s l', l')
+
 (*
  * TODO: Implement the following function
-
-let archive_map opset r (s, l) =
-  "Replace this string with your implementation." ;;
 
 let solve' opset r p x =
   "Replace this string with your implementation." ;;
