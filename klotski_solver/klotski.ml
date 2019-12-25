@@ -136,11 +136,33 @@ let solve_path' opset r p x =
     | x::_ -> p x in
   List.rev (solve' opset r' p' [x])
 
+(* Example of puzzle:
+ * Test the code with "Mister Rabbit's Great Escape"
+ * Rabbit must goes from A to B.
+ * He goes on straight line:  ---A------B--- or ---B----A---
+ * He goes slowly, one step by one step forward. But he can
+ * be afraid sometimes and go backwards by three steps. And
+ * sometimes he becomes crazy and run so fast that he double
+ * his position forward.
+ * Example: A=17, B=15. To go from A to B one solution is
+ *    1 - Go one step forward (reach 18)
+ *    2 - Be afraid and jump three steps backward (reach 15)
+ *
+ * To fix ideas definitions can be
+ *   type rabbit_move = Forward | Backward | Jump
+ *   let rabbit_moves _ =  [ Forward ; Backward ; Jump ]
+ *   let move_rabbit pos = function
+ *     | Forward -> pos + 1
+ *     | Backward -> pos - 3
+ *     | Jump -> pos * 2
+ *)
+
+let solve_puzzle puz opset c =
+  let all_confs c = List.map (fun m -> puz.move c m) (puz.possible_moves c) in
+  solve_path' opset all_confs puz.final c
+
 (*
  * TODO: Implement the following function
-
-let solve_puzzle p opset c =
-  "Replace this string with your implementation." ;;
 
 (* --- Part B: A Solver for Klotski --- *)
 
