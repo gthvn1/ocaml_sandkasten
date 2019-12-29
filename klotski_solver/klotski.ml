@@ -161,13 +161,18 @@ let solve_puzzle puz opset c =
   let all_confs c = List.map (fun m -> puz.move c m) (puz.possible_moves c) in
   solve_path' opset all_confs puz.final c
 
-(*
- * TODO: Implement the following function
-
 (* --- Part B: A Solver for Klotski --- *)
 
 let final board =
-  "Replace this string with your implementation." ;;
+  let v1 = Array.get (Array.get board 3) 1 in
+  let v2 = Array.get (Array.get board 3) 2 in
+  let v3 = Array.get (Array.get board 4) 1 in
+  let v4 = Array.get (Array.get board 4) 2 in
+  let s = (S, 0) in
+  v1 = s && v2 = s && v3 = s && v4 = s
+
+(*
+ * TODO: Implement the following function
 
 let move_piece board piece { drow; dcol } =
   "Replace this string with your implementation." ;;
