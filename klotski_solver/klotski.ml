@@ -49,8 +49,8 @@ let initial_board_simpler =
   [|
     [| c0; s ; s ; c2 |];
     [| c1; s ; s ; c3 |];
-    [| v0; v1; v2; v3 |];
-    [| v0; v2; v3; v3 |];
+    [| v1; v2; v3; v0 |];
+    [| v2; v3; v3; v0 |];
     [| x ; x ; x ; x  |];
   |]
 
@@ -162,20 +162,61 @@ let solve_puzzle puz opset c =
   solve_path' opset all_confs puz.final c
 
 (* --- Part B: A Solver for Klotski --- *)
+(*
+ * Board coords are as follow
+  [|
+    [| (0,1); (0,2); (0,3); (0,4) |];
+    [| (1,1); (1,2); (1,3); (1,4) |];
+    [| (2,1); (2,2); (2,3); (2,4) |];
+    [| (3,1); (3,2); (3,3); (3,4) |];
+    [| (4,1); (4,2); (4,3); (4,4) |];
+  |]
+*)
+
+let get_piece board x y =
+  try
+    Some (Array.get (Array.get board x) y)
+  with _ -> None
 
 let final board =
-  let v1 = Array.get (Array.get board 3) 1 in
-  let v2 = Array.get (Array.get board 3) 2 in
-  let v3 = Array.get (Array.get board 4) 1 in
-  let v4 = Array.get (Array.get board 4) 2 in
-  let s = (S, 0) in
-  v1 = s && v2 = s && v3 = s && v4 = s
+  let p1 = get_piece board 3 1 in
+  let p2 = get_piece board 3 2 in
+  let p3 = get_piece board 4 1 in
+  let p4 = get_piece board 4 2 in
+  let s = Some (S, 0) in
+  p1 = s && p2 = s && p3 = s && p4 = s
+
+let find_piece_in_row row piece =
+  let row_size = Array.length row in
+  let rec aux idx =
+    if idx >= row_size then None
+    else
+      if piece = (Array.get row idx) then Some idx
+      else aux (idx + 1) in
+  aux 0;;
+
+let find_piece_in_board board piece =
+  let nb_row = Array.length board in
+  let rec aux idx =
+  if idx >= nb_row then None
+  else
+    match find_piece_in_row (Array.get board idx) piece with
+    | None -> aux (idx + 1)
+    | Some v -> Some (idx, v)
+  in
+  aux 0;;
+
+let move_piece board piece { drow; dcol } =
+  let try_to_move x y =
+    match get_piece board (x + drow) (y + dcol) with
+    | Some (X, _) -> Some board (* board needs to be updated *)
+    | _ -> None in
+  match find_piece_in_board board piece with
+  | None -> None
+  | Some (x, y) -> try_to_move x y
 
 (*
  * TODO: Implement the following function
-
-let move_piece board piece { drow; dcol } =
-  "Replace this string with your implementation." ;;
 
 let possible_moves board =
   "Replace this string with your implementation." ;;
