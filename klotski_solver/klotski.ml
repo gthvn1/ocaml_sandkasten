@@ -238,11 +238,29 @@ let move_piece board piece {drow ; dcol} =
   | (C, _) -> move_carre board piece {drow ; dcol}
   | _ -> None
 
-(*
- * TODO: Implement the following function
+exception WTF
 
 let possible_moves board =
-  "Replace this string with your implementation." ;;
+  let up    = {dcol = 0;  drow = -1} in
+  let down  = {dcol = 0;  drow = 1} in
+  let left  = {dcol = -1; drow = 0} in
+  let right = {dcol = 1;  drow = 0} in
+  let f = function
+    | (_, _, None) -> false
+    | _ -> true in
+  let g = function
+    | (a, b, Some c) -> Move (a, b, c)
+    | _ -> raise WTF in
+  let rec aux = function
+    | [] -> []
+    | x::xs -> (x, up, move_piece board x up) ::
+               (x, down, move_piece board x down) ::
+               (x, left, move_piece board x left) ::
+               (x, right, move_piece board x right) :: aux xs in
+  List.map g (List.filter f (aux all_pieces))
+
+(*
+ * TODO: Implement the following function
 
 module BoardSet = Set.Make (struct
     type t = board
