@@ -212,6 +212,11 @@ let find_piece_in_board board piece =
 
 exception WTF
 
+let up    = {dcol = 0;  drow = -1}
+let down  = {dcol = 0;  drow = 1}
+let left  = {dcol = -1; drow = 0}
+let right = {dcol = 1;  drow = 0}
+
 (* Check that a part of a piece can be moved *)
 let can_move board x y {drow; dcol} =
   let p = get_piece board x y in
@@ -223,20 +228,23 @@ let can_move board x y {drow; dcol} =
     | Some (k', i') -> k = k' && i = i'
     | _ -> false
 
-let move_it board x y {drow; dcol} =
-  let p = match get_piece board x y with Some a -> a | _ -> raise WTF in
-  let n = match get_piece board (x + drow) (y + dcol) with Some a -> a | _ -> raise WTF in
-  set_piece board p (x + drow) (y + dcol);
-  set_piece board n x y;
-  Some board
+let rec move_it board {drow; dcol} = function
+  | [] -> Some board
+  | (x, y)::xs ->
+    let p = match get_piece board x y with Some a -> a | _ -> raise WTF in
+    let n = match get_piece board (x + drow) (y + dcol) with Some a -> a | _ -> raise WTF in
+    set_piece board p (x + drow) (y + dcol);
+    set_piece board n x y;
+    move_it board {drow; dcol} xs
 
 let move_carre board piece { drow; dcol } =
   match find_piece_in_board board piece with
   | None -> None
-  | Some (x, y) -> if can_move board x y {drow; dcol} then move_it board x y {drow; dcol}
+  | Some (x, y) -> if can_move board x y {drow; dcol} then move_it board {drow; dcol} [(x, y)]
         else None
 
 let move_square board piece { drow; dcol } =
+  let dir = {drow = drow; dcol = dcol} in
   match find_piece_in_board board piece with
   | None -> None
   | Some (x, y) ->
@@ -245,44 +253,37 @@ let move_square board piece { drow; dcol } =
        can_move board (x + 1) (y + 1) {drow; dcol} &&
        can_move board x (y + 1) {drow; dcol}
     then
-      let b = move_it board x y {drow; dcol} in
-      match b with
-        None -> None
-      | Some b -> let b = move_it b (x + 1) y {drow; dcol} in
-      match b with
-        None -> None
-      | Some b -> let b = move_it b (x + 1) (y + 1) {drow; dcol} in
-      match b with
-        None -> None
-      | Some b -> move_it b x (y + 1) {drow; dcol}
+      if  dir = up || dir = left
+      then move_it board {drow; dcol} [(x,y); (x + 1, y); (x + 1, y + 1); (x, y + 1)]
+      else move_it board {drow; dcol} [(x + 1, y + 1); (x, y + 1); (x, y); (x + 1, y)]
     else
       None
 
 let move_vrect board piece { drow; dcol } =
+  let dir = {drow = drow; dcol = dcol} in
   match find_piece_in_board board piece with
   | None -> None
   | Some (x, y) ->
     if can_move board x y {drow; dcol} &&
        can_move board (x + 1) y {drow; dcol}
     then
-      let b = move_it board x y {drow; dcol} in
-      match b with
-        None -> None
-      | Some b -> move_it b (x + 1) y {drow; dcol}
+      if  dir = up || dir = left
+      then move_it board {drow; dcol} [(x, y); (x + 1, y)]
+      else move_it board {drow; dcol} [(x + 1, y); (x, y)]
     else
       None
 
 let move_hrect board piece { drow; dcol } =
+  let dir = {drow = drow; dcol = dcol} in
   match find_piece_in_board board piece with
   | None -> None
   | Some (x, y) ->
     if can_move board x y {drow; dcol} &&
        can_move board x (y + 1) {drow; dcol}
     then
-      let b = move_it board x y {drow; dcol} in
-      match b with
-        None -> None
-      | Some b -> move_it b x (y + 1) {drow; dcol}
+      if  dir = up || dir = left
+      then move_it board {drow; dcol} [(x, y); (x, y + 1)]
+      else move_it board {drow; dcol} [(x, y + 1); (x, y)]
     else
       None
 
@@ -295,10 +296,6 @@ let move_piece board piece {drow ; dcol} =
   | _ -> None
 
 let possible_moves board =
-  let up    = {dcol = 0;  drow = -1} in
-  let down  = {dcol = 0;  drow = 1} in
-  let left  = {dcol = -1; drow = 0} in
-  let right = {dcol = 1;  drow = 0} in
   let f = function
     | (_, _, None) -> false
     | _ -> true in
