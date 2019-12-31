@@ -178,6 +178,10 @@ let get_piece board x y =
     Some (Array.get (Array.get board x) y)
   with _ -> None
 
+let set_piece board piece x y =
+    let row = Array.get board x in
+    Array.set row y piece
+
 let final board =
   let p1 = get_piece board 3 1 in
   let p2 = get_piece board 3 2 in
@@ -206,14 +210,33 @@ let find_piece_in_board board piece =
   in
   aux 0;;
 
-let move_piece board piece { drow; dcol } =
+let move_carre board piece { drow; dcol } =
   let try_to_move x y =
     match get_piece board (x + drow) (y + dcol) with
-    | Some (X, _) -> Some board (* board needs to be updated *)
+    | Some (X, _) -> (
+        set_piece board piece (x + drow) (y + dcol);
+        set_piece board (X, 0) x y;
+        Some board
+      )
     | _ -> None in
   match find_piece_in_board board piece with
   | None -> None
   | Some (x, y) -> try_to_move x y
+
+(* The three following function needs to be implemented *)
+let move_square = move_carre
+
+let move_vrect = move_carre
+
+let move_hrect = move_carre
+
+let move_piece board piece {drow ; dcol} =
+  match piece with
+  | (S, _) -> move_square board piece {drow ; dcol}
+  | (V, _) -> move_vrect board piece {drow ; dcol}
+  | (H, _) -> move_hrect board piece {drow ; dcol}
+  | (C, _) -> move_carre board piece {drow ; dcol}
+  | _ -> None
 
 (*
  * TODO: Implement the following function
