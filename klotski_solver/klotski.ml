@@ -295,6 +295,15 @@ let move_piece board piece {drow ; dcol} =
   | (C, _) -> move_carre board piece {drow ; dcol}
   | _ -> None
 
+let copy_board board =
+  [|
+    Array.copy board.(0);
+    Array.copy board.(1);
+    Array.copy board.(2);
+    Array.copy board.(3);
+    Array.copy board.(4);
+  |]
+
 let possible_moves board =
   let f = function
     | (_, _, None) -> false
@@ -304,10 +313,10 @@ let possible_moves board =
     | _ -> raise WTF in
   let rec aux = function
     | [] -> []
-    | x::xs -> (x, up, move_piece board x up) ::
-               (x, down, move_piece board x down) ::
-               (x, left, move_piece board x left) ::
-               (x, right, move_piece board x right) :: aux xs in
+    | x::xs -> (x, up, move_piece (copy_board board) x up) ::
+               (x, down, move_piece (copy_board board) x down) ::
+               (x, left, move_piece (copy_board board) x left) ::
+               (x, right, move_piece (copy_board board) x right) :: aux xs in
   List.map g (List.filter f (aux all_pieces))
 
 (*
