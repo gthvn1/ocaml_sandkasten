@@ -1,6 +1,6 @@
 # OCaml Kindergarten
 
-![OCaml LoGo](https://ocaml.org/img/colour-logo-white.svg)
+![OCaml LoGo](https://ocaml.org/logo-with-name.svg)
 
 My [OCaml](https://ocaml.org/) playground.
 
