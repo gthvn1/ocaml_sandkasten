@@ -56,15 +56,14 @@ let list_of_int_from_file path =
         path 
         |> read_whole_file
         |> String.split_on_char '\n'
+        |> List.filter (fun s -> String.length s > 0)
         |> List.map int_of_string     (* got list of int *)
-
-let solve_file (path: string) =
-        Printf.printf "Filepath: %s\n" path
 
 (* ===== MAIN ===== *)
 let () =
-        Sys.argv
-        |> Array.to_list
-        |> List.tl
-        |> List.iter solve_file
+        let ws = int_of_string (Array.get Sys.argv 1) in
+        let filename = Array.get Sys.argv 2 in
+        match solve (list_of_int_from_file filename) ws with
+        | None -> Printf.printf "The list is ok\n"
+        | Some(x) -> Printf.printf "%d is not the sum of two previous integers\n" x
 
