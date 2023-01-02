@@ -24,6 +24,10 @@ let button_of_string s =
         |> List.filter (fun c -> c != ' ')
         |> List.map lit_of_char
 
+(*
+ * true indicates that the state of the button (Lit or Unlit) will change, false
+ * indicates that it remains in the same state.
+ *)
 let transform_of_button = function
           1 -> [true ; true ; false; true ; true ; false; false; false; false]
         | 2 -> [true ; true ; true ; false; false; false; false; false; false]
@@ -43,6 +47,20 @@ let transform_merlin b m =
         in
         List.combine (transform_of_button b) m
         |> List.map tr
+
+let decompose_int i =
+        let rec inner i l =
+                if i < 10 then List.cons i l
+                          else inner (i / 10) (List.cons (i mod 10) l) in
+        inner i []
+
+(*
+ * Apply transformation takes a number that represents the list of button pushed.
+ * For example: [8; 6; 2] means push 8, then 6 then 2.
+ *)
+let rec apply_transformations bl m = match bl with
+          [] -> m
+        | b::bs -> apply_transformations bs (transform_merlin b m)
 
 (* you init merlin row by row
  * row1 = "* * *"
@@ -66,6 +84,7 @@ let () =
         let row2 = input_line stdin in
         let row3 = input_line stdin in
         let allbuttonspressed = input_line stdin in
+        let buttonlist = decompose_int (int_of_string allbuttonspressed) in
         let m = init_merlin row1 row2 row3 in
         (* Write an answer using print_endline *)
         (* To debug: prerr_endline "Debug message"; *)
@@ -73,4 +92,7 @@ let () =
         print_endline "----------------------";
         print_merlin m;
 
-        print_endline "answer (a single digit)"
+        print_endline "----------------------";
+        print_endline allbuttonspressed;
+        print_endline "----------------------";
+        print_merlin (apply_transformations buttonlist m);
