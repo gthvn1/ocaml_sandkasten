@@ -2,5 +2,3 @@ _build
 *.cmi
 *.cmo
 *.cmx
-.merlin
-dune-project
