@@ -13,8 +13,9 @@
  * We take the head of the list and we check *)
 let rec is_sum_of n =  function
         | [] -> false
+        | _::[] -> false
         | x::xs -> if x >= n
-                        then false
+                        then is_sum_of n xs
                         else (* we are looking for y where x + y = n *)
                                 let y = n - x in
                                 if List.mem y xs
