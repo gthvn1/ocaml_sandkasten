@@ -1,4 +1,4 @@
-# OCaml Kindergarten
+# OCaml Sandkasten
 
 ![OCaml LoGo](https://ocaml.org/logo-with-name.svg)
 
