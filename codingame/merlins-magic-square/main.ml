@@ -40,39 +40,32 @@ let button_of_string s =
  * "false" indicates that it remains in the same state.
  *)
 let transform_of_button = function
-        | 1 -> [true ; true ; false; true ; true ; false; false; false; false]
-        | 2 -> [true ; true ; true ; false; false; false; false; false; false]
-        | 3 -> [false; true ; true ; false; true ; true ; false; false; false]
-        | 4 -> [true ; false; false; true ; false; false; true ; false; false]
-        | 5 -> [false; true ; false; true ; true; true ; false; true ; false]
-        | 6 -> [false; false; true ; false; false; true ; false; false; true ]
-        | 7 -> [false; false; false; true ; true ; false; true ; true ; false]
-        | 8 -> [false; false; false; false; false; false; true ; true ; true ]
-        | 9 -> [false; false; false; false; true ; true ; false; true ; true ]
+        | '1' -> [true ; true ; false; true ; true ; false; false; false; false]
+        | '2' -> [true ; true ; true ; false; false; false; false; false; false]
+        | '3' -> [false; true ; true ; false; true ; true ; false; false; false]
+        | '4' -> [true ; false; false; true ; false; false; true ; false; false]
+        | '5' -> [false; true ; false; true ; true ; true ; false; true ; false]
+        | '6' -> [false; false; true ; false; false; true ; false; false; true ]
+        | '7' -> [false; false; false; true ; true ; false; true ; true ; false]
+        | '8' -> [false; false; false; false; false; false; true ; true ; true ]
+        | '9' -> [false; false; false; false; true ; true ; false; true ; true ]
         | _ -> failwith "there is only 9 buttons"
 
 (**
  * Take a transformation (t) that is related to the button's value
  * and apply it to merlin (m)
  *)
-let transform_merlin t m =
+let transform_merlin butVal m =
         let trans (switch, y) = match y with
         | Lit -> if switch then Unlit else Lit
         | Unlit -> if switch then Lit else Unlit
 in
-        List.combine (transform_of_button t) m
+        List.combine (transform_of_button butVal) m
         |> List.map trans
-
-(* 123 => [1; 2; 3] *)
-let decompose_int i =
-        let rec inner i l =
-                if i < 10 then List.cons i l
-                          else inner (i / 10) (List.cons (i mod 10) l) in
-        inner i []
 
 (*
  * Apply transformation takes a number that represents the list of button pushed.
- * For example: [8; 6; 2] means push 8, then 6 then 2.
+ * For example: ['8'; '6'; '2'] means push 8, then 6 then 2.
  *)
 let rec apply_transformations bl m = match bl with
           [] -> m
@@ -102,20 +95,17 @@ let merlin_to_string m =
 (* Find the button to push to get the solution *)
 let solve_merlin m =
         let rec find_solution = function
-                | 0 -> 0  (* it is impossible in fact *)
-                | x -> if (is_a_winner (apply_transformations [x] m))
-                       then x
-                       else find_solution (x - 1)
+                | [] -> '0'  (* it is impossible in fact *)
+                | c::cs -> if (is_a_winner (apply_transformations [c] m))
+                                then c
+                                else find_solution cs
         in
-        find_solution 9
+        find_solution ['1'; '2'; '3'; '4'; '5'; '6'; '7'; '8'; '9']
 
 
-(* 123 => [1; 2; 3] *)
-let decompose_int i =
-        let rec inner i l =
-                if i < 10 then List.cons i l
-                          else inner (i / 10) (List.cons (i mod 10) l) in
-        inner i []
+(* "123" => ['1'; '2'; '3'] *)
+let buttons_from_string str =
+        List.of_seq (String.to_seq str)
 
 
 (* Auto-generated code below aims at helping you parse *)
@@ -125,7 +115,7 @@ let () =
         let row2 = input_line stdin in
         let row3 = input_line stdin in
         let allbuttonspressed = input_line stdin in
-        let buttonlist = decompose_int (int_of_string allbuttonspressed) in
+        let buttonlist = buttons_from_string allbuttonspressed in
         let m = init_merlin row1 row2 row3 in
         let after_trans = apply_transformations buttonlist m in
         (* Write an answer using print_endline *)
@@ -139,5 +129,5 @@ let () =
         prerr_string "-----> Display merlin after transformations";
         prerr_endline (merlin_to_string after_trans);
 
-        print_endline (Int.to_string (solve_merlin after_trans));
+        print_char (solve_merlin after_trans);
 
