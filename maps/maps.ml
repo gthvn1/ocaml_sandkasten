@@ -47,10 +47,15 @@ module AssocListMap : Map = struct
 
   type ('k, 'v) t = ('k * 'v) list
 
-  let insert _ _ _ = failwith "insert unimplemented"
-  let find _ _ = failwith "find unimplemented"
-  let remove _ _ = failwith "remove unimplemented"
+  let insert k v m = (k, v) :: m
+
+  let find = List.assoc_opt
+
+  let remove k = List.filter (fun (k', _) -> k <> k')
+
   let empty = []
-  let of_list _ = failwith "of_list unimplemented"
+
+  let of_list l = l
+
   let bindings m = m
 end
