@@ -13,7 +13,8 @@ let assoc_tests =
     binding_test "empty has no bindings" [] empty;
     binding_test "singleton has 1 binding" l1 (of_list l1);
     binding_test "list with 2 bindings" l2 (of_list l2);
-    binding_test "adding 1 binding" l1 (insert 3110 "fun" empty)
+    binding_test "adding 1 binding" l1 (empty |> insert 3110 "fun");
+    binding_test "adding 2 bindings with same key" l1 (empty |> insert 3110 "nop" |> insert 3110 "fun")
   ]
 
 let suite = "map suite" >::: assoc_tests
