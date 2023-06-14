@@ -29,7 +29,7 @@ module type Map = sig
 end
 
 module AssocListMap : Map = struct
-(**
+  (**
  What is the representation type ?
 
  What is the abstraction function ?
