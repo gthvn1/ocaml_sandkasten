@@ -38,19 +38,27 @@ module AssocListMap : Map = struct
     {k1: v1, k2: v2, ..., kn: vn}. If a key appears more than once in the list,
     then in the map it is bound to the left-most occurence in the list.
     For example, [[(k, v1); (k, v2)]] represents the map {k: v1}.
- 
+
  What are the representation invariants?
  RI => None
- 
+
  What is the efficiency of each operation?
  *)
 
   type ('k, 'v) t = ('k * 'v) list
 
   let insert k v m = (k, v) :: m
+
   let find = List.assoc_opt
+  
   let remove k = List.filter (fun (k', _) -> k <> k')
+  
   let empty = []
+  
   let of_list l = l
-  let bindings m = m
+
+  let bindings m =
+    let create_pair x = (x, List.assoc x m) in
+    let list_of_uniq_keys = m |> List.map fst |> List.sort_uniq Stdlib.compare in
+    List.map create_pair list_of_uniq_keys
 end
