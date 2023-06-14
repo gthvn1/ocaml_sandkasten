@@ -1,6 +1,18 @@
 open OUnit2
 open Maps
 
+(** [cmp_set_like_lists lst1 lst2] compares two lists to see whether they
+    are equivalent set-like lists. That means checking two things. First, they
+    must both be {set like}, meaning that they do not contain any duplicates.
+    Second, they must contain the same elements though not necesseraly in the
+    same order. *)
+let cmp_set_like_lists lst1 lst2 =
+  let uniq1 = List.sort_uniq Stdlib.compare lst1 in
+  let uniq2 = List.sort_uniq Stdlib.compare lst2 in
+     List.length uniq1 = List.length lst1
+  && List.length uniq2 = List.length lst2
+  && uniq1 = uniq2
+
 (** [pp_pair] pretty prints a pair of [(a, b)] using [pp1] as the
     pretty print function for [a] and [pp2] as the pretty print
     function for [b] *)
@@ -23,7 +35,9 @@ let pp_list lst =
 
 let binding_test name input output =
   name >:: fun _ ->
-  assert_equal input (AssocListMap.bindings output) ~printer:pp_list
+  assert_equal input
+    (AssocListMap.bindings output)
+    ~printer:pp_list ~cmp:cmp_set_like_lists
 
 let l1 = [ (3110, "fun") ]
 let l2 = [ (3110, "fun"); (2110, "oo") ]
