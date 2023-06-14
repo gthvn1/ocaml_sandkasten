@@ -48,17 +48,15 @@ module AssocListMap : Map = struct
   type ('k, 'v) t = ('k * 'v) list
 
   let insert k v m = (k, v) :: m
-
   let find = List.assoc_opt
-  
   let remove k = List.filter (fun (k', _) -> k <> k')
-  
   let empty = []
-  
   let of_list l = l
 
   let bindings m =
     let create_pair x = (x, List.assoc x m) in
-    let list_of_uniq_keys = m |> List.map fst |> List.sort_uniq Stdlib.compare in
+    let list_of_uniq_keys =
+      m |> List.map fst |> List.sort_uniq Stdlib.compare
+    in
     List.map create_pair list_of_uniq_keys
 end
