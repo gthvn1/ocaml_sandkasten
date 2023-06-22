@@ -2,3 +2,5 @@ _build
 *.cmi
 *.cmo
 *.cmx
+*.o
+*.so
