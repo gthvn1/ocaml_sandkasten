@@ -10,3 +10,5 @@ Most of exercices are taken from:
 - [coding game](www.codingame.com)
 
 Also read [Ocaml Programming: Correct + Efficient + Beautiful](https://cs3110.github.io/textbook/cover.html)
+
+And many tries...
