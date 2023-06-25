@@ -43,18 +43,18 @@ int draw_rectangle(SDL_Renderer *r, SDL_Rect *rect)
 
 int main(void)
 {
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    SDL_Event event;
-    SDL_Rect rect = { .x = 0, .y = 0, .w = 50, .h = 30 };
     bool game_is_running = true;
     int win_width = 800;
     int win_height = 600;
     int ret = 0;
     uint64_t sticks, eticks, delay = 0;
     uint64_t fps = 60;
-    int dx = 10;
-    int dy = 10;
+    int dx = 1;
+    int dy = 1;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Event event;
+    SDL_Rect rect = { .x = win_width/2, .y = win_height/2, .w = 50, .h = 30 };
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("[ERROR] init video: %s\n", SDL_GetError());
@@ -98,22 +98,26 @@ int main(void)
                         game_is_running = false;
                         break;
                     case SDL_SCANCODE_LEFT:
-                        rect.x -= dx;
+                        if (dx > 0) dx *= -1; // dx must be negative
                         break;
                     case SDL_SCANCODE_RIGHT:
-                        rect.x += dx;
+                        if (dx < 0) dx *= -1; // dx must be positive
                         break;
                     case SDL_SCANCODE_UP:
-                        rect.y -= dy;
+                        if (dy > 0) dy *= -1; // dy must be negative
                         break;
                     case SDL_SCANCODE_DOWN:
-                        rect.y += dy;
+                        if (dy < 0) dy *= -1; // dy must be positive
                         break;
                     default:
                         // nothing to do
                         break;
                 }
         }
+
+        // update the state
+        rect.x += dx;
+        rect.y += dy;
 
         // Draw new frame
         if (clear_screen(renderer) < 0) {
