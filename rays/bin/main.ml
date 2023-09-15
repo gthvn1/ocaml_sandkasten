@@ -1,1 +1,4 @@
-let () = print_endline "Hello, World!"
+open Rays
+
+let () =
+  Image.hello ()
