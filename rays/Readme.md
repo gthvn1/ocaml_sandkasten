@@ -1,4 +1,9 @@
-# Starting the project
+# Overview
+
+- On youtube we saw a very interesting projet and so we try to follow it...
+- [Live coding a ray tracer in OCaml](https://www.youtube.com/watch?v=D_esyWms6zY&list=PL844gPdJQcO3_AuwU6HljB4suqY-wWjOO&index=2&pp=iAQB)
+
+# Let's begin
 
 ```sh
 # Create a directory
@@ -14,3 +19,4 @@ opam install dune -y
 cd ../
 dune init proj rays --inline-tests --ppx ppx_expect
 ```
+
