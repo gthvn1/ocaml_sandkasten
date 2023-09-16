@@ -1,4 +1,4 @@
-open Rays
+open Rayslib
 
 let () =
   Image.hello ()
