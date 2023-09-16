@@ -1,5 +1,15 @@
 open Rayslib
 
 let%expect_test _ =
-  Image.hello ();
-  [%expect {| Hello from Image |}]
+  let pixel = Pixel.create ~r:10 ~g:5 ~b:210 in
+  print_endline (Pixel.string_of_pixel pixel);
+  [%expect {| 10 5 210 |}]
+
+let%expect_test _ =
+  let image = Image.create ~width:15 ~height: 20 in
+  print_endline (Image.string_of_image image);
+  [%expect {|
+  P3
+  15 20
+  255
+  |}]
