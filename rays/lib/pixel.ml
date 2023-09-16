@@ -1,5 +1,8 @@
 type t = int * int * int
 
+let white:t = (255, 255, 255)
+let black:t = (0, 0, 0)
+
 let create ~r ~g ~b =
   let is_invalid c = (c < 0) || (c > 255) in
   if (is_invalid r ) then failwith "Invalid red value";
