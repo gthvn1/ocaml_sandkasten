@@ -8,7 +8,8 @@ let%expect_test _ =
 let%expect_test _ =
   let image = Image.create ~width:3 ~height:2 in
   print_endline (Image.string_of_image image);
-  [%expect {|
+  [%expect
+    {|
   P3
   3 2
   255
