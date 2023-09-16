@@ -27,17 +27,20 @@ module P = Pixel
 type t = {
   width: int;
   height: int;
-  pixels: P.t array array;
+  pixels: P.t array;
 }
 
-let create ~width ~height = 
+let create ~width ~height ~pixel =
   if width <= 0 then failwith "Width must be strictly positive";
   if height <= 0 then failwith "Height must be strictly positive";
   {
     width = width;
-    height = height; 
-    pixels = Array.make_matrix width height P.white;
+    height = height;
+    pixels = Array.make (width * height) pixel;
   }
+
+let fold_pixels s p =
+  s ^ (P.string_of_pixel p) ^ "\n"
 
 let string_of_image (i:t) : string =
   let header = "P3\n"
@@ -45,5 +48,6 @@ let string_of_image (i:t) : string =
               ^ " "
               ^ (string_of_int i.height)
               ^ "\n255\n" in
-  let body = "0 0 0" in
+  let body =
+    Array.fold_left fold_pixels "" i.pixels in
   header ^ body

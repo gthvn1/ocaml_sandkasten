@@ -6,10 +6,17 @@ let%expect_test _ =
   [%expect {| 10 5 210 |}]
 
 let%expect_test _ =
-  let image = Image.create ~width:15 ~height: 20 in
+  let pixel = Pixel.create ~r:10 ~g:100 ~b:35 in
+  let image = Image.create ~width:3 ~height:2 ~pixel:pixel in
   print_endline (Image.string_of_image image);
   [%expect {|
   P3
-  15 20
+  3 2
   255
+  10 100 35
+  10 100 35
+  10 100 35
+  10 100 35
+  10 100 35
+  10 100 35
   |}]
