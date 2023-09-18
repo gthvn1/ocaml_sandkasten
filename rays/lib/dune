@@ -1,6 +1,6 @@
 (library
  (name rayslib)
- (modules pixel image vec3)
+ (modules image pixel vec3)
  (inline_tests)
  (preprocess
   (pps ppx_inline_test ppx_expect)))

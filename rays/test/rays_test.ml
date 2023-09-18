@@ -1,9 +1,9 @@
 open Rayslib
 
 let%expect_test _ =
-  let pixel = Pixel.create ~r:10 ~g:5 ~b:210 in
+  let pixel = Pixel.create ~r:0.0 ~g:0.5 ~b:1.0 in
   print_endline (Pixel.string_of_pixel pixel);
-  [%expect {| 10 5 210 |}]
+  [%expect {| 0 127 255 |}]
 
 let%expect_test _ =
   let image = Image.create ~rows:2 ~columns:3 in

@@ -47,14 +47,11 @@ let transform (image : t) =
   let cols = get_columns image in
   for x = 0 to rows - 1 do
     for y = 0 to cols - 1 do
-      let vr = float_of_int y /. float_of_int (cols - 1) in
-      let vg = float_of_int x /. float_of_int (rows - 1) in
-      let vb = 0. in
       let p =
         P.create
-          ~r:(vr *. 255.999 |> int_of_float)
-          ~g:(vg *. 255.999 |> int_of_float)
-          ~b:(vb *. 255.999 |> int_of_float)
+          ~r:(float_of_int y /. float_of_int (cols - 1))
+          ~g:(float_of_int x /. float_of_int (rows - 1))
+          ~b:0.
       in
       image.(x).(y) <- p
     done
