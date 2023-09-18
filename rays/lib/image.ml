@@ -1,13 +1,30 @@
 module P = Pixel
 
-type t = { width : int; height : int; pixels : P.t array }
+(*
+ * PPM image is a matrix of pixels.
+ * Image 3 x 2
+ *   => 3 columns / 2 rows
+ *   =>
+ *      +--------+--------+--------+
+ *      | (0, 0) | (0, 1) | (0, 2) | => row 0 (x == 0)
+ *      +--------+--------+--------+
+ *      | (1, 0) | (1, 1) | (1, 2) | => row 1 (x == 1)
+ *      +--------+--------+--------+
+ *        col 0    col 1    col 2
+ *        y = 0    y = 1    y = 2
+ *
+ *)
+type t = P.t array array
 
-let create ~width ~height =
-  if width <= 0 then failwith "Width must be strictly positive";
-  if height <= 0 then failwith "Height must be strictly positive";
-  { width; height; pixels = Array.make (width * height) P.white }
+let create ~(columns : int) ~(rows : int) : t =
+  assert (columns > 0 && rows > 0);
+  Array.make_matrix rows columns P.white
 
-let fold_pixels s p = s ^ P.string_of_pixel p ^ "\n"
+let get_rows image = Array.length image
+
+let get_columns image =
+  assert (Array.length image > 0);
+  Array.length image.(0)
 
 (*
     for (int j = 0; j < image_height; ++j) {
@@ -24,28 +41,45 @@ let fold_pixels s p = s ^ P.string_of_pixel p ^ "\n"
         }
     }
 *)
+
 let transform (image : t) =
-  let pixels = image.pixels in
-  let boundx = image.width - 1 in
-  let boundy = image.height - 1 in
-  for y = 0 to boundy do
-    for x = 0 to boundx do
-      let vr = float_of_int x /. float_of_int boundx in
-      let vg = float_of_int y /. float_of_int boundy in
-      let index = x + (y * image.width) in
+  let rows = get_rows image in
+  let cols = get_columns image in
+  for x = 0 to rows - 1 do
+    for y = 0 to cols - 1 do
+      let vr = float_of_int y /. float_of_int (cols - 1) in
+      let vg = float_of_int x /. float_of_int (rows - 1) in
+      let vb = 0. in
       let p =
         P.create
-          ~r:(int_of_float (vr *. 255.999))
-          ~g:(int_of_float (vg *. 255.999))
-          ~b:0
+          ~r:(vr *. 255.999 |> int_of_float)
+          ~g:(vg *. 255.999 |> int_of_float)
+          ~b:(vb *. 255.999 |> int_of_float)
       in
-      pixels.(index) <- p
+      image.(x).(y) <- p
     done
   done
 
-let string_of_image (i : t) : string =
-  let header =
-    "P3\n" ^ string_of_int i.width ^ " " ^ string_of_int i.height ^ "\n255\n"
+let string_of_array arr =
+  let rec str_of_a i a =
+    if i = Array.length a - 1 then P.string_of_pixel a.(i)
+    else P.string_of_pixel a.(i) ^ "  " ^ str_of_a (i + 1) a
   in
-  let body = Array.fold_left fold_pixels "" i.pixels in
+  str_of_a 0 arr
+
+let string_of_matrix matrix =
+  let rows = Array.length matrix in
+  let rec str_of_m i m =
+    if i = rows - 1 then string_of_array m.(i)
+    else string_of_array m.(i) ^ "\n" ^ str_of_m (i + 1) m
+  in
+  str_of_m 0 matrix
+
+let string_of_ppm (i : t) : string =
+  let rows = Array.length i in
+  let cols = Array.length i.(0) in
+  let header =
+    "P3\n" ^ string_of_int cols ^ " " ^ string_of_int rows ^ "\n255\n"
+  in
+  let body = string_of_matrix i in
   header ^ body

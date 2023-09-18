@@ -6,17 +6,13 @@ let%expect_test _ =
   [%expect {| 10 5 210 |}]
 
 let%expect_test _ =
-  let image = Image.create ~width:3 ~height:2 in
-  print_endline (Image.string_of_image image);
+  let image = Image.create ~rows:2 ~columns:3 in
+  print_endline (Image.string_of_ppm image);
   [%expect
     {|
   P3
   3 2
   255
-  255 255 255
-  255 255 255
-  255 255 255
-  255 255 255
-  255 255 255
-  255 255 255
+  255 255 255  255 255 255  255 255 255
+  255 255 255  255 255 255  255 255 255
   |}]
