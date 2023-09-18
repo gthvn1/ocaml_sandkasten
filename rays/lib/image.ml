@@ -45,15 +45,15 @@ let get_columns image =
 let transform (image : t) =
   let rows = get_rows image in
   let cols = get_columns image in
-  for x = 0 to rows - 1 do
-    for y = 0 to cols - 1 do
+  for y = 0 to cols - 1 do
+    for x = 0 to rows - 1 do
       let p =
         P.create
           ~r:(float_of_int y /. float_of_int (cols - 1))
           ~g:(float_of_int x /. float_of_int (rows - 1))
           ~b:0.
       in
-      image.(x).(y) <- p
+      image.(y).(x) <- p
     done
   done
 
