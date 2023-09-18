@@ -3,17 +3,9 @@ type t = float * float * float
 let orig : t = (0., 0., 0.)
 
 (* accessors *)
-let x (v : t) =
-  let x, _, _ = v in
-  x
-
-let y (v : t) =
-  let _, y, _ = v in
-  y
-
-let z (v : t) =
-  let _, _, z = v in
-  z
+let x ((x, _, _) : t) = x
+let y ((_, y, _) : t) = y
+let z ((_, _, z) : t) = z
 
 (* Operations *)
 let length_squared (v : t) : float =
