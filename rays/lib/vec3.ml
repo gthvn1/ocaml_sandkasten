@@ -1,5 +1,7 @@
 type t = float * float * float
 
+let orig : t = (0., 0., 0.)
+
 (* accessors *)
 let x (v : t) =
   let x, _, _ = v in
@@ -26,5 +28,12 @@ let ( +. ) (v1 : t) (v2 : t) : t =
   (x1 +. x2, y1 +. y2, z1 +. z2)
 
 let ( *. ) v a =
-  let x1, y1, z1 = v in
-  (x1 *. a, y1 *. a, z1 *. a)
+  let x, y, z = v in
+  (x *. a, y *. a, z *. a)
+
+let string_of_vec3 v =
+  let x, y, z = v in
+  let sx = string_of_float x in
+  let sy = string_of_float y in
+  let sz = string_of_float z in
+  "(" ^ sx ^ ", " ^ sy ^ ", " ^ sz ^ ")"
