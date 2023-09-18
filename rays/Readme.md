@@ -3,6 +3,7 @@
 - On youtube we saw a very interesting projet so let's try it...
 - [Live coding a ray tracer in OCaml](https://www.youtube.com/watch?v=D_esyWms6zY&list=PL844gPdJQcO3_AuwU6HljB4suqY-wWjOO&index=2&pp=iAQB)
 - [Ray tracing in one week-end](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+- [Basic raytracing](https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html)
 
 # The journey for ray tracing...
 
