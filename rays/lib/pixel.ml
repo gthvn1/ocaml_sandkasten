@@ -14,9 +14,6 @@ let create ~r ~g ~b =
   if is_invalid b then failwith "Invalid blue value";
   { r; g; b }
 
-(*
- * scale float from range 0.0 to 1.0 to integer from range 0 to 255.
- *)
 let color (c : float) : int = c *. 255.999 |> int_of_float
 
 let string_of_pixel (p : t) : string =
