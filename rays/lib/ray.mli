@@ -9,3 +9,6 @@ val direction : t -> Vec3.t
 
 val origin : t -> Vec3.t
 (** [origin t] returns the origin of the ray *)
+
+val raytrace : unit -> Image.t
+(** [raytrace] creates an image, does the ray trace and return it *)

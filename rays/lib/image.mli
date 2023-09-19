@@ -10,8 +10,9 @@ val get_rows : t -> int
 val get_columns : t -> int
 (** [get_colmuns i] returns the number of columns of the image [i] *)
 
-val transform : t -> unit
-(** [transform i] is a basic transformation use for testing purpose *)
+val transformation_example : t -> unit
+(** [image_example i] takes an image and do some transformation. It is used for
+    testing purposed. *)
 
 val string_of_ppm : t -> string
 (** [string_of_ppm i] returns the image [i] as a string using PPM format *)

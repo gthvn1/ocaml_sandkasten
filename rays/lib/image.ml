@@ -42,7 +42,7 @@ let get_columns image =
     }
 *)
 
-let transform (image : t) =
+let transformation_example (image : t) =
   let rows = get_rows image in
   let cols = get_columns image in
   for y = 0 to cols - 1 do
