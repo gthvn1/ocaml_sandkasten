@@ -13,6 +13,7 @@ depends: [
   "ocaml"
   "dune" {>= "3.10"}
   "ppx_expect"
+  "ounit2"
   "odoc" {with-doc}
 ]
 build: [

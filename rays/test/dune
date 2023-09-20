@@ -1,5 +1,11 @@
+(test
+ (name test_vec3)
+ (modules test_vec3)
+ (libraries rayslib ounit2))
+
 (library
- (name rays_test)
+ (name test_rays)
+ (modules test_pixel test_image)
  (libraries rayslib)
  (inline_tests)
  (preprocess
