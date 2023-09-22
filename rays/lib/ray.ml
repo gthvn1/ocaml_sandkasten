@@ -21,6 +21,8 @@ let ray_color (r : t) =
 
     Pixel.create ~r:(1.0 -. a +. (a *. 0.5)) ~g:(1.0 -. a +. (a *. 0.7)) ~b:1.0
 
+let at (r : t) (time : float) : Vec3.t = Vec3.(orig +++ (time *** r.direction))
+
 let raytrace () =
   (*
    * let's use a 16:9 aspect ratio image

@@ -5,10 +5,14 @@ val create : o:Vec3.t -> d:Vec3.t -> t
 (** [create ~o:origin ~d:direction] returns a ray *)
 
 val direction : t -> Vec3.t
-(** [direction t] returns the direction of the ray *)
+(** [direction r] returns the direction of the ray [r] *)
 
 val origin : t -> Vec3.t
-(** [origin t] returns the origin of the ray *)
+(** [origin r] returns the origin of the ray [r] *)
+
+val at : t -> float -> Vec3.t
+(** [at r t] It returns the 3D position of the ray [r] along its direction at
+    time [t] *)
 
 val raytrace : unit -> Image.t
 (** [raytrace] creates an image, does the ray trace and return it *)
