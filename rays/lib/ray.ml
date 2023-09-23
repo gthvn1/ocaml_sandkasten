@@ -26,16 +26,16 @@ let raytrace () =
   (* viewport setup *)
   let viewport_u : Vec3.t = (viewport_width, 0., 0.) in
   let viewport_v : Vec3.t = (0., -.viewport_height, 0.) in
-  let pixel_delta_u = Vec3.(viewport_u /. float_of_int image_width) in
-  let pixel_delta_v = Vec3.(viewport_v /. float_of_int image_height) in
+  let pixel_delta_u = Vec3.(viewport_u /// float_of_int image_width) in
+  let pixel_delta_v = Vec3.(viewport_v /// float_of_int image_height) in
   (* locate the upper left pixel *)
   let viewport_upper_left =
     Vec3.(
-      camera_center +. (0., 0., focal_length) -. (viewport_u /. 2.)
-      -. (viewport_v /. 2.))
+      camera_center +++ (0., 0., focal_length) --- (viewport_u /// 2.)
+      --- (viewport_v /// 2.))
   in
   let pixel00_loc =
-    Vec3.(viewport_upper_left +. (0.5 *. (pixel_delta_u +. pixel_delta_v)))
+    Vec3.(viewport_upper_left +++ (0.5 *** (pixel_delta_u +++ pixel_delta_v)))
   in
   "aspect_ratio:        " ^ string_of_float aspect_ratio |> print_endline;
   "image_width:         " ^ string_of_int image_width |> print_endline;
@@ -58,9 +58,9 @@ let raytrace () =
       let fx = float_of_int x in
       let fy = float_of_int y in
       let pixel_center =
-        Vec3.(pixel00_loc +. (fx *. pixel_delta_u) +. (fy *. pixel_delta_v))
+        Vec3.(pixel00_loc +++ (fx *** pixel_delta_u) +++ (fy *** pixel_delta_v))
       in
-      let ray_direction = Vec3.(pixel_center -. camera_center) in
+      let ray_direction = Vec3.(pixel_center --- camera_center) in
       let r = create ~o:camera_center ~d:ray_direction in
       let color_pixel = ray_color r in
       image.(y).(x) <- color_pixel
