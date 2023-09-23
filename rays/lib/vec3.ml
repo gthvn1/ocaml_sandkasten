@@ -43,3 +43,8 @@ let string_of_vec3 v =
   let sy = string_of_float y in
   let sz = string_of_float z in
   "(" ^ sx ^ ", " ^ sy ^ ", " ^ sz ^ ")"
+
+let dot v1 v2 =
+  let x1, y1, z1 = v1 in
+  let x2, y2, z2 = v2 in
+  (x1 *. x2) +. (y1 *. y2) +. (z1 *. z2)

@@ -17,6 +17,7 @@ let tests =
          ( "multiplication" >:: fun _ ->
            assert_equal Vec3.(2. *** v1) (6., 8., 0.) );
          ("division" >:: fun _ -> assert_equal Vec3.(v2 /// 2.) (1., 3., 2.));
+         ("dot product" >:: fun _ -> assert_equal (Vec3.dot v1 v2) 30.);
        ]
 
 let _ = run_test_tt_main tests

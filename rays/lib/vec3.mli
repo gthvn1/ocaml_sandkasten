@@ -33,3 +33,7 @@ val ( /// ) : t -> float -> t
 
 val string_of_vec3 : t -> string
 (** [string_of_vec3 v] returns the string that represents the vector [v] *)
+
+val dot : t -> t -> float
+(** [dot v1 v2] returns the dot product (aka scalar product) between [v1] and
+    [v2] *)
