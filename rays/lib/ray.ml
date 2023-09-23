@@ -4,10 +4,22 @@ let create ~(o : Vec3.t) ~(d : Vec3.t) : t = { origin = o; direction = d }
 let direction (r : t) = r.direction
 let origin (r : t) = r.origin
 
+let hit_sphere (center : Vec3.t) (radius : float) (ray : t) : bool =
+  let oc = Vec3.(orig --- center) in
+  let dr = direction ray in
+  let a : float = Vec3.(dot dr dr) in
+  let b : float = Vec3.(2. *. dot oc dr) in
+  let c : float = Vec3.dot oc oc -. (radius *. radius) in
+  let discriminant = (b *. b) -. (4. *. a *. c) in
+  discriminant >= 0.
+
 let ray_color (r : t) =
-  let d = Vec3.unit_vector r.direction in
-  let a = (0.5 *. Vec3.y d) +. 1.0 in
-  Pixel.create ~r:(1.0 -. a +. (a *. 0.5)) ~g:(1.0 -. a +. (a *. 0.7)) ~b:1.0
+  if hit_sphere (0., 0., -1.) 0.5 r then Pixel.create ~r:1.0 ~g:0.0 ~b:1.0
+  else
+    let d = Vec3.unit_vector r.direction in
+    let a = (0.5 *. Vec3.y d) +. 1.0 in
+
+    Pixel.create ~r:(1.0 -. a +. (a *. 0.5)) ~g:(1.0 -. a +. (a *. 0.7)) ~b:1.0
 
 let raytrace () =
   (*
