@@ -1,0 +1,5 @@
+(executable
+ (name chorus)
+ (public_name gtn_chorus)
+ (package chorus)
+ (libraries cmdliner))

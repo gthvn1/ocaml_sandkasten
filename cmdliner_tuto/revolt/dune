@@ -1,0 +1,3 @@
+(executable
+ (name revolt)
+ (libraries cmdliner))
