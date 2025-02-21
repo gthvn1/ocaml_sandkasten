@@ -13,6 +13,8 @@
 
 open Lwt.Infix
 
+let socket_path = "/tmp/socket_test"
+
 let create_socket (path : string) =
   (* Remove the old socket file if it exists. If the file doesn't exist
      unlink raises ENOENT so just ignore it. *)
@@ -40,5 +42,4 @@ let rec accept_connections socket =
 
 let () =
   Lwt_main.run
-    ( create_socket "/tmp/socket_test" >>= fun socket ->
-      accept_connections socket )
+    (create_socket socket_path >>= fun socket -> accept_connections socket)
