@@ -1,7 +1,7 @@
 # Goal
 
 - Create a client/server that uses local socket to communicate
-
+```
 +-----------------------------+----------------------------+
 |      Server                 |         Client             |
 |-----------------------------+----------------------------|
@@ -12,7 +12,7 @@
 | Recv (wait for client)   <--|--   Send                   |
 | send                      --|-->  Recv (wait for server) |
 +-----------------------------+----------------------------+
-
+```
 # Build & Run
 
 - `dune build`
