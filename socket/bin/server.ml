@@ -40,6 +40,9 @@ let rec accept_connections socket =
     Bytes.to_string buffer |> String.trim |> String.uppercase_ascii
   in
   Lwt_fmt.eprintf "%s\n%!" received >>= fun () ->
+  let buf = Bytes.of_string "PONG" in
+  Lwt_unix.send client_socket buf 0 (Bytes.length buf) [] >>= fun bytes_send ->
+  Lwt_fmt.eprintf "Send %d bytes\n%!" bytes_send >>= fun () ->
   Lwt.async (fun () -> Lwt_unix.close client_socket);
   accept_connections socket
 
