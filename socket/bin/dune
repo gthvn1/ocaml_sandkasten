@@ -1,7 +1,7 @@
 (executable
  (name server)
- (libraries unix lwt.unix))
+ (libraries lwt lwt.unix))
 
 (executable
  (name client)
- (libraries unix))
+ (libraries lwt lwt.unix))

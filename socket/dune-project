@@ -1,1 +1,11 @@
 (lang dune 3.17)
+
+(name socket-xml)
+
+(generate_opam_files true)
+
+(package
+ (name socket-xml)
+ (allow_empty true)
+ (version 0.1)
+ (depends unix lwt alcotest))
