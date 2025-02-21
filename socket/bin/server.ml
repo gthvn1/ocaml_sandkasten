@@ -4,57 +4,41 @@
  * File descriptor: 
  * Address: can be IP:PORT or path on the filesystem
  *
+ * https://ocaml.github.io/odoc/lwt/lwt.unix/Lwt_unix/index.html#val-socket
+ * https://www.geeksforgeeks.org/socket-in-computer-network/
+ *
  * To test we can use:
  * ❯ echo "Hello from socat" | socat - UNIX-CONNECT:/tmp/socket_test
  *)
 
-let create_server (path : string) =
-  let open Unix in
-  (* Remove the socket file if it exists *)
-  (try unlink path with Unix_error (ENOENT, _, _) -> ());
+open Lwt.Infix
 
-  Printf.eprintf "Create sock addr using %s\n%!" path;
-  let sock_addr = ADDR_UNIX path in
-  Printf.eprintf "Create the socket for UNIX STREAM\n%!";
-  let sock_fd = socket PF_UNIX SOCK_STREAM 0 in
-  setsockopt sock_fd SO_REUSEADDR true;
-  Printf.eprintf "Bind sock addr with created socket\n%!";
-  bind sock_fd sock_addr;
-  listen sock_fd 10;
+let create_socket (path : string) =
+  (* Remove the old socket file if it exists. If the file doesn't exist
+     unlink raises ENOENT so just ignore it. *)
+  Lwt.catch
+    (fun () -> Lwt_unix.unlink path)
+    (function
+      | Unix.Unix_error (Unix.ENOENT, _, _) -> Lwt.return_unit | e -> Lwt.fail e)
+  >>= fun () ->
+  Lwt_fmt.eprintf "Create a unix socket bind to %s\n%!" path >>= fun () ->
+  let s = Lwt_unix.socket Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  Lwt_unix.bind s (Unix.ADDR_UNIX path) >>= fun () ->
+  Lwt_unix.listen s 10;
+  (* Allow up to 10 pending connections *)
+  Lwt.return s
 
-  (* Ensure cleanup on exit *)
-  at_exit (fun () -> close sock_fd);
-  at_exit (fun () -> unlink path);
-
-  sock_fd
-
-let serve_request (client_socket : Unix.file_descr) =
+let rec accept_connections socket =
   let buffer = Bytes.create 64 in
-  let received_bytes = Unix.recv client_socket buffer 0 64 [] in
-  Printf.eprintf "received %d bytes\n%!" received_bytes;
-  Printf.eprintf "%s\n%!" (Bytes.to_string buffer);
-  Unix.close client_socket
+  Lwt_unix.accept socket >>= fun (client_socket, _client_sockaddr) ->
+  Lwt_fmt.eprintf "Client connected\n%!" >>= fun () ->
+  Lwt_unix.read client_socket buffer 0 64 >>= fun bytes_read ->
+  Lwt_fmt.eprintf "Received %d bytes\n%!" bytes_read >>= fun () ->
+  Lwt_fmt.eprintf "%s\n%!" (Bytes.to_string buffer) >>= fun () ->
+  Lwt.async (fun () -> Lwt_unix.close client_socket);
+  accept_connections socket
 
 let () =
-  let socket_path = "/tmp/socket_test" in
-  (*
-   * Currently we are running the server manually so we can intercept ctrl-c to terminate 
-   * properly. We don't need to clean up the socket file as it will be cleaned up on exit
-   * using at_exit. Also we handle the sigint when accepting a client connection.
-   *)
-  Sys.set_signal Sys.sigint
-    (Sys.Signal_handle (fun _ -> print_endline "Terminating..."; exit 0));
-
-  let server_socket = create_server socket_path in
-  while true do
-    try
-      Printf.eprintf "Waiting for client....\n%!";
-      let client_socket, client_addr = Unix.accept server_socket in
-      let () =
-        match client_addr with
-        | Unix.ADDR_UNIX s -> Printf.eprintf "We are connected to %s !!!\n%!" s
-        | _ -> failwith "Not expected..."
-      in
-      serve_request client_socket
-    with Unix.Unix_error (EINTR, _, _) -> ()
-  done
+  Lwt_main.run
+    ( create_socket "/tmp/socket_test" >>= fun socket ->
+      accept_connections socket )
