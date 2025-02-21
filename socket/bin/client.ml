@@ -17,8 +17,10 @@ let create_socket (path : string) =
   Lwt_unix.(connect sk (ADDR_UNIX path)) >>= fun () -> Lwt.return sk
 
 let () =
-  let buf = Bytes.of_string "Ping" in
   Lwt_main.run
-    ( create_socket socket_path >>= fun sk ->
+    ( Lwt_fmt.printf "Enter a message: %!" >>= fun () ->
+      Lwt_io.read_line Lwt_io.stdin >>= fun user_input ->
+      let buf = Bytes.of_string user_input in
+      create_socket socket_path >>= fun sk ->
       Lwt_unix.send sk buf 0 (Bytes.length buf) [] >>= fun bytes_send ->
       Lwt_fmt.eprintf "Send %d bytes\n%!" bytes_send )

@@ -36,7 +36,10 @@ let rec accept_connections socket =
   Lwt_fmt.eprintf "Client connected\n%!" >>= fun () ->
   Lwt_unix.read client_socket buffer 0 64 >>= fun bytes_read ->
   Lwt_fmt.eprintf "Received %d bytes\n%!" bytes_read >>= fun () ->
-  Lwt_fmt.eprintf "%s\n%!" (Bytes.to_string buffer) >>= fun () ->
+  let received =
+    Bytes.to_string buffer |> String.trim |> String.uppercase_ascii
+  in
+  Lwt_fmt.eprintf "%s\n%!" received >>= fun () ->
   Lwt.async (fun () -> Lwt_unix.close client_socket);
   accept_connections socket
 
