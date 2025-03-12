@@ -6,6 +6,8 @@
      1. A constructor M that wraps a value
      2. A return function that lifts a value into a monadic type
      3. A bind function that chains the computations
+
+  Links: https://cs3110.github.io/textbook/chapters/ds/monads.html
 *)
 
 (* Example with the "choix" Monad that is the option Monad
