@@ -36,10 +36,8 @@ let rec accept_connections socket =
   Lwt_fmt.eprintf "Client connected\n%!" >>= fun () ->
   Lwt_unix.read client_socket buffer 0 64 >>= fun bytes_read ->
   Lwt_fmt.eprintf "Received %d bytes\n%!" bytes_read >>= fun () ->
-  let received =
-    Bytes.to_string buffer |> String.trim |> String.uppercase_ascii
-  in
-  Lwt_fmt.eprintf "%s\n%!" received >>= fun () ->
+  let read = Bytes.to_string buffer |> String.trim |> String.uppercase_ascii in
+  Lwt_fmt.eprintf "%s\n%!" read >>= fun () ->
   let buf = Bytes.of_string "PONG" in
   Lwt_unix.send client_socket buf 0 (Bytes.length buf) [] >>= fun bytes_send ->
   Lwt_fmt.eprintf "Send %d bytes\n%!" bytes_send >>= fun () ->
