@@ -8,7 +8,17 @@
      3. A bind function that chains the computations
 *)
 
-(* Example with the "choix" Monad that is the option Monad *)
+(* Example with the "choix" Monad that is the option Monad
+
+  Notes (it is my understanding...):
+    - the type in Choix is called a covariant functor
+    - adding the monadic operations (return, bind) to this covariant
+    functor produces a free monadic structure.
+    - We can also use functor (in the OCaml sense) to create a new module
+    and add monadic operations to this functor. In this case it is a
+    monadic structure and not a free monadic structure.
+      - See the end of the file for an example:
+ *)
 
 module Choix = struct
   (* 1. It needs a constructor *)
@@ -75,3 +85,24 @@ let () =
   print_result @@ computation 4 0 6;
   print_result @@ computation 4 4 (-6);
   print_result @@ computation 4 2 6
+
+(*
+     Monadic structure from functor
+
+      module type FUNCTOR = sig
+        type 'a t
+        val map : 'a t -> ('a -> 'b) -> 'b t
+      end
+
+      module Free (F : FUNCTOR) = struct
+        type 'a t =
+          | Return of 'a
+          | Bind of 'a F.t * ('a -> 'b t)
+
+        let return x = Return x
+        let bind m f = match m with
+          | Return x -> f x
+          | Bind (x, g) -> Bind (x, fun a -> bind (g a) f)
+      end
+
+   *)
