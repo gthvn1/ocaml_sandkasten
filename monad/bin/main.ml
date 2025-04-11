@@ -77,6 +77,29 @@ let computation a b c =
   => if 2 + 3 > 0 then Qqe (2 + 3) else Rien => Qqe 5
  *)
 
+let inc x = x + 1
+let dec x = x - 1
+
+(*let inc_log x = (x + 1, Printf.sprintf "Called inc on %i; " x)*)
+(*let dec_log x = (x - 1, Printf.sprintf "Called dec on %i; " x)*)
+
+(* We can defined the function id by using inc and dec for example*)
+let id x = x |> inc |> dec
+
+(* But we cannot do it using inc_log. If we want to do it we need to update
+  the inc_log to take a tuple (int , string) as a parameter *)
+let inc_log' (x, s) = (x + 1, s ^ Printf.sprintf "Called inc on %i; " x)
+let dec_log' (x, s) = (x - 1, s ^ Printf.sprintf "Called dec on %i; " x)
+
+(* We want to log string when executing the function *)
+let log (name : string) (f : int -> int) : int -> int * string =
+ fun x -> (f x, Printf.sprintf "Called %s on %i; " name x)
+
+let loggable (name : string) (f : int -> int) : int * string -> int * string =
+ fun (x, s1) ->
+  let y, s2 = log name f x in
+  (y, s1 ^ s2)
+
 let print_result = function
   | Rien -> print_endline "Computation aborted"
   | Qqe x ->
