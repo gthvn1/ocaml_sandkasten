@@ -70,6 +70,45 @@ module Classical_variant : Classical_variant_sig = struct
         | _ -> raise Ill_typed)
 end
 
+(* To allow the type check at compile time we need a way to store the information within
+the type. For this we can start by using phantom type. *)
+module type Phantom_variant_sig = sig
+  type _ t
+  (* Phantom type allow to use another type and it is called phantom because we won't use it in the
+  right part of the definition. We will see that in the implementation *)
+
+  (* We need some constructors: we see that now the information of the type is
+      indicated in the phantom type *)
+  val i : int -> int t
+  val b : bool -> bool t
+  val plus_ : int t -> int t -> int t
+  val eq_ : 'a t -> 'a t -> bool t
+  val if_ : bool t -> int t -> int t -> int t
+
+  (* We need an evaluator. In fact now that we want to be able to differenciate integer and boolean
+  at compile time we need one evalutar per type *)
+  val i_eval : int t -> value
+  val b_eval : bool t -> value
+end
+
+module Phantom_variant : Phantom_variant_sig = struct
+  type expr =
+    | Value of value
+    | Eq of expr * expr
+    | Plus of expr * expr
+    | If of expr * expr * expr
+
+  type _ t = expr
+  (* here we see why it is a phantom type, the generalized part is not used in the right side *)
+
+  let i x = Value (Int x)
+  let b x = Value (Bool x)
+  let plus_ x y = Plus (x, y)
+  let eq_ a b = Eq (a, b)
+  let if_ c x y = If (c, x, y)
+  let i_eval = failwith "TODO"
+  let b_eval = failwith "TODO"
+end
 (* -------------------------------------------------------------------------- *)
 (* -------------------------------------------------------------------------- *)
 

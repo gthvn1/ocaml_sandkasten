@@ -12,3 +12,13 @@ let () =
     (* It compiles but it won't run *)
   with Gadt_tuto.Rpc_toy.Ill_typed ->
     print_endline "ill typed detected at runtime"
+
+let () =
+  (* uncomment the block below and build. You will see that error
+     is now detected at compile time .*)
+
+  (*
+  let open Gadt_tuto.Rpc_toy.Phantom_variant in
+  let _ = plus_ (i 12) (b true) in
+  *)
+  print_endline "wrong usage of plus_ is detected at compile time now..."
