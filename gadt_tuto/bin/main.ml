@@ -23,3 +23,19 @@ let () =
     "[phantom] wrong usage of plus_ is detected at compile time now...";
   plus_ (i 12) (i 35) |> i_eval |> s_of_v |> Printf.printf "[phantom] %s\n";
   eq_ (b false) (b true) |> b_eval |> s_of_v |> Printf.printf "[phantom] %s\n"
+
+let () =
+  let open Gadt_tuto.Example in
+  let res =
+    flexible_find
+      ~f:(fun x -> x > 10)
+      [ 1; 2; 3; 4 ] (If_not_found.Default_to 42)
+  in
+  (* We are sure that we will have a default value. We can use Option.get *)
+  Printf.printf "[flexible_find] %d\n" (Option.get res);
+  let res =
+    flexible_find'
+      ~f:(fun x -> x > 10)
+      [ 1; 2; 3; 4 ] (If_not_found'.Default_to 42)
+  in
+  Printf.printf "[flexible_find] %d\n" res

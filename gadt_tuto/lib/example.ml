@@ -164,7 +164,60 @@ let rec eval' : type a. a expr' -> a = function
 *)
 
 (* -------------------------------------------------------------------------- *)
+(* When Are GADTs Useful?                                                     *)
 (* -------------------------------------------------------------------------- *)
+
+(** We want to create a version of kind that can handle issue in different
+    maners
+
+    - It can thrown an exception
+    - Return None
+    - Return a default value *)
+module If_not_found = struct
+  type 'a t = Raise | Return_none | Default_to of 'a
+end
+
+(* Let's write our find function *)
+let rec flexible_find list ~f (if_not_found : _ If_not_found.t) =
+  match list with
+  | hd :: tl -> if f hd then Some hd else flexible_find tl ~f if_not_found
+  | [] -> (
+      match if_not_found with
+      | Raise -> failwith "Element not found"
+      | Return_none -> None
+      | Default_to x -> Some x)
+
+(* The problem here is that if we know that we will return a default value it could better
+   to return the value and not the option. In this case where we have different return values
+   we can use GADT. *)
+
+module If_not_found' = struct
+  type (_, _) t =
+    | Raise : ('a, 'a) t
+    | Return_none : ('a, 'a option) t
+    | Default_to : 'a -> ('a, 'a) t
+end
+
+(* What is important here is that we see that we have a list of elements of type 'a and
+  the return type can be either of the same type of the elements of the list (so type 'a) but
+  it can also be an Option. So we have two types. We can see it in the signature of If_not_found' *)
+let rec flexible_find' : type a b.
+    a list -> f:(a -> bool) -> (a, b) If_not_found'.t -> b =
+ fun list ~f if_not_found ->
+  match list with
+  | [] -> (
+      match if_not_found with
+      | Raise -> failwith "No matching item found"
+      | Return_none -> None
+      | Default_to x -> x)
+  | hd :: tl ->
+      if f hd then
+        match if_not_found with
+        | Raise -> hd
+        | Return_none -> Some hd
+        | Default_to _ -> hd
+      else flexible_find' tl ~f if_not_found
+
 (* 
 
 (* Type representing an RPC call *)
