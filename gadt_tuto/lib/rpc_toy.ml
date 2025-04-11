@@ -7,6 +7,12 @@
 (** We want to be able to use booleans and integers. *)
 type value = Int of int | Bool of bool
 
+type expr =
+  | Value of value
+  | Eq of expr * expr
+  | Plus of expr * expr
+  | If of expr * expr * expr
+
 (** [string_of_value v] returns a string from the value [v] *)
 let string_of_value v =
   match v with
@@ -33,13 +39,24 @@ module type Classical_variant_sig = sig
   val eval : t -> value
 end
 
-module Classical_variant : Classical_variant_sig = struct
-  type expr =
-    | Value of value
-    | Eq of expr * expr
-    | Plus of expr * expr
-    | If of expr * expr * expr
+let rec eval (e : expr) : value =
+  match e with
+  | Value v -> v
+  | Eq (e1, e2) -> (
+      match (eval e1, eval e2) with
+      | Bool x, Bool y -> Bool (x = y)
+      | Int x, Int y -> Bool (x = y)
+      | _ -> raise Ill_typed)
+  | Plus (e1, e2) -> (
+      match (eval e1, eval e2) with
+      | Int x, Int y -> Int (x + y)
+      | _ -> raise Ill_typed)
+  | If (c1, e1, e2) -> (
+      match eval c1 with
+      | Bool b -> if b then eval e1 else eval e2
+      | _ -> raise Ill_typed)
 
+module Classical_variant : Classical_variant_sig = struct
   type t = expr
 
   (* Constructors *)
@@ -52,30 +69,16 @@ module Classical_variant : Classical_variant_sig = struct
   (** Evaluator: with ADT and variants we see that we check the type during the
       execution. IT is because when we use a classical ADT we can only have one
       type as output that is "expr" *)
-  let rec eval (e : t) =
-    match e with
-    | Value v -> v
-    | Eq (e1, e2) -> (
-        match (eval e1, eval e2) with
-        | Bool x, Bool y -> Bool (x = y)
-        | Int x, Int y -> Bool (x = y)
-        | _ -> raise Ill_typed)
-    | Plus (e1, e2) -> (
-        match (eval e1, eval e2) with
-        | Int x, Int y -> Int (x + y)
-        | _ -> raise Ill_typed)
-    | If (c1, e1, e2) -> (
-        match eval c1 with
-        | Bool b -> if b then eval e1 else eval e2
-        | _ -> raise Ill_typed)
+  let eval = eval
 end
 
 (* To allow the type check at compile time we need a way to store the information within
 the type. For this we can start by using phantom type. *)
 module type Phantom_variant_sig = sig
-  type _ t
-  (* Phantom type allow to use another type and it is called phantom because we won't use it in the
-  right part of the definition. We will see that in the implementation *)
+  type 'a t
+  (* Phantom type allow to use another type and it is called phantom because we won't use
+     it in the right part of the definition. We will see that in the implementation.
+     As it is not used we can also write: type _ t *)
 
   (* We need some constructors: we see that now the information of the type is
       indicated in the phantom type *)
@@ -92,12 +95,6 @@ module type Phantom_variant_sig = sig
 end
 
 module Phantom_variant : Phantom_variant_sig = struct
-  type expr =
-    | Value of value
-    | Eq of expr * expr
-    | Plus of expr * expr
-    | If of expr * expr * expr
-
   type _ t = expr
   (* here we see why it is a phantom type, the generalized part is not used in the right side *)
 
@@ -106,8 +103,10 @@ module Phantom_variant : Phantom_variant_sig = struct
   let plus_ x y = Plus (x, y)
   let eq_ a b = Eq (a, b)
   let if_ c x y = If (c, x, y)
-  let i_eval = failwith "TODO"
-  let b_eval = failwith "TODO"
+
+  (* We can reuse the classical variant even if we now know that checks are done at compile time *)
+  let i_eval = eval
+  let b_eval = eval
 end
 (* -------------------------------------------------------------------------- *)
 (* -------------------------------------------------------------------------- *)
