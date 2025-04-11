@@ -25,6 +25,9 @@ let string_of_value v =
 (* As we cannot add two booleans we can have ill typed exception. *)
 exception Ill_typed
 
+(* -------------------------------------------------------------------------- *)
+(* CLASSICAL VARIANT                                                          *)
+(* -------------------------------------------------------------------------- *)
 module type Classical_variant_sig = sig
   type t
 
@@ -72,6 +75,9 @@ module Classical_variant : Classical_variant_sig = struct
   let eval = eval
 end
 
+(* -------------------------------------------------------------------------- *)
+(* PHANTOM VARIANT                                                            *)
+(* -------------------------------------------------------------------------- *)
 (* To allow the type check at compile time we need a way to store the information within
 the type. For this we can start by using phantom type. *)
 module type Phantom_variant_sig = sig
@@ -108,9 +114,57 @@ module Phantom_variant : Phantom_variant_sig = struct
   let i_eval = eval
   let b_eval = eval
 end
+
 (* -------------------------------------------------------------------------- *)
+(* GADT: here we are                                                          *)
 (* -------------------------------------------------------------------------- *)
 
+type _ value' =
+  | Int : int -> int value'
+  | Bool : bool -> bool value'
+      (** The ':' shows that it is a GADT
+
+          -> To the right of the colon with something that looks like single
+          argument function type. You can think of it has the type signature for
+          the tag, viewed as a type constructor. *)
+
+type _ expr' =
+  | Value : 'a value' -> 'a expr'
+  | Eq : 'a expr' * 'a expr' -> bool expr'
+  | Plus : int expr' * int expr' -> int expr'
+  | If : bool expr' * 'a expr' * 'a expr' -> 'a expr'
+
+let i' x = Value (Int x)
+let b' x = Value (Bool x)
+let plus' x y = Plus (x, y)
+let eq' x y = Eq (x, y)
+let if' c x y = If (c, x, y)
+
+(*
+   Here like with phantom type we have the type safety rules
+
+     🐫 > Plus ((Value (Int 12)), (Value (Int 12)));;
+     - : int expr' = Plus (Value (Int 12), Value (Int 12))
+     🐫 > Plus ((Value (Int 12)), (Value (Bool false)));;
+     Error: This constructor has type bool value'
+            but an expression was expected of type int value'
+            Type bool is not compatible with type int
+*)
+
+(* But now we can have on eval function... *)
+let rec eval' : type a. a expr' -> a = function
+  | Value v -> ( match v with Int x -> x | Bool x -> x)
+  | Eq (e1, e2) -> eval' e1 = eval' e2
+  | Plus (i1, i2) -> eval' i1 + eval' i2
+  | If (c1, e1, e2) -> if eval' c1 then eval' e1 else eval' e2
+
+(*
+  It looks pretty neat.
+  To achieve this we need to use a locally abstract type.
+*)
+
+(* -------------------------------------------------------------------------- *)
+(* -------------------------------------------------------------------------- *)
 (* 
 
 (* Type representing an RPC call *)
