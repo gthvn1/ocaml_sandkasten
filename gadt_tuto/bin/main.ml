@@ -9,5 +9,6 @@ let () =
   try
     let b1 = b true in
     plus_ v1 b1 |> eval |> s_of_v |> Printf.printf "res = %s\n"
+    (* It compiles but it won't run *)
   with Gadt_tuto.Rpc_toy.Ill_typed ->
     print_endline "ill typed detected at runtime"
