@@ -39,3 +39,5 @@ let () =
       [ 1; 2; 3; 4 ] (If_not_found'.Default_to 42)
   in
   Printf.printf "[flexible_find] %d\n" res
+
+let () = Gadt_tuto.Example.stringable_example ()

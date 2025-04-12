@@ -218,6 +218,42 @@ let rec flexible_find' : type a b.
         | Default_to _ -> hd
       else flexible_find' tl ~f if_not_found
 
+(* -------------------------------------------------------------------------- *)
+(* Capturing the unknown                                                      *)
+(* -------------------------------------------------------------------------- *)
+
+type stringable =
+  | Stringable : { value : 'a; to_string : 'a -> string } -> stringable
+
+(*
+  WTF...
+  Let's decompse this:
+  -> Stringable is the constructor for an "existential type"
+  -> the ':' indicates that it is a GADT
+  -> and the constructor takes an argument of record type that packs together
+    -> value: 'a is to say that there is some type 'a which is hidden (existential)
+    -> and a function 'a -> string for converting values of that type into string
+
+  NOTE: We are calling this existential type because if comes from **logic** and
+        **type theory**. In logic we have two main quantifiers:
+          - Universal quantifier: ∀ → "for all"
+          - Existential quantifier: ∃ → "there exists"
+  Here we can say: there exists some type 'a such that we have a value of type 'a, and
+  a function from 'a -> string. And the code knows there is a type 'a but from the outside
+  you cannot know which type is it. It is hidden.
+  
+  And we can write function for this type stringable:
+*)
+
+let print_stringable (Stringable s) = print_endline (s.to_string s.value)
+
+let stringable_example () =
+  let stringables =
+    (* let's use a helper to build stringables *)
+    let s value to_string = Stringable { value; to_string } in
+    [ s 100 Int.to_string; s 12.3 Float.to_string; s "foo" (fun s -> s) ]
+  in
+  List.iter print_stringable stringables
 (* 
 
 (* Type representing an RPC call *)
