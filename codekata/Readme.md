@@ -1,0 +1,3 @@
+- Solving [CodeKata](https://www.guvi.in/code-kata/)
+- build: `dune build`
+- run: `dune exec codekata`
