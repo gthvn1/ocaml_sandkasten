@@ -1,0 +1,3 @@
+(library
+ (name codekata_lib)
+ (public_name codekata))
