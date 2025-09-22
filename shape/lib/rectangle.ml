@@ -1,1 +1,0 @@
-let area x y = x *. y

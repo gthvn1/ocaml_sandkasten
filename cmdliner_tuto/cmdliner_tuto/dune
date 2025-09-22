@@ -1,3 +1,0 @@
-(executable
- (name cmdliner_tuto)
- (libraries cmdliner))

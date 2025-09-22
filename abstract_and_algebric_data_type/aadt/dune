@@ -1,5 +1,0 @@
-(executable
- (name main)
- (public_name aadt)
- (flags
-  (:standard -w -32-37-69)))

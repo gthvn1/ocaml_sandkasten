@@ -1,6 +1,0 @@
-(executable
- (public_name rays)
- (name main)
- (libraries rayslib)
- (preprocess
-  (pps ppx_expect)))

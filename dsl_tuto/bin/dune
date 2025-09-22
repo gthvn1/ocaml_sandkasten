@@ -1,4 +1,0 @@
-(executable
- (public_name dsl_tuto)
- (name main)
- (libraries dsl_tuto))

@@ -1,5 +1,0 @@
-(library
- (name quicksort_test)
- (libraries quicksort)
- (inline_tests)
- (preprocess (pps ppx_expect)))

@@ -1,4 +1,0 @@
-(executable
- (public_name effect_tuto)
- (name main)
- (modules main toto tata))

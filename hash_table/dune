@@ -1,3 +1,0 @@
-(executable
-  (name maps_test)
-  (libraries ounit2))

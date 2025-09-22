@@ -1,4 +1,0 @@
-(executable
-  (name client)
-  (libraries lwt.unix)
-)
