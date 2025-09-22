@@ -11,3 +11,7 @@
 (package
   (name hello)
   (synopsis "An OCaml sandbox: chaotic experiments, for fun and learning"))
+
+(package
+  (name codekata)
+  (synopsis "Practice with CodeKata an interactive platform for programming"))
