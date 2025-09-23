@@ -1,21 +1,19 @@
-(* ----------- FLATTEN --------- *)
-type 'a node = One of 'a | Many of 'a node list
-
-let flatten (l : 'a node list) : 'a list =
-  let rec loop acc = function
-    | [] -> List.rev acc
-    | x :: xs -> (
-        match x with
-        | One x -> loop (x :: acc) xs
-        | Many _ ->
-            print_endline "TODO: flatten many";
-            List.rev acc)
+(* ----------- IS PRIME --------- *)
+let is_prime (n : int) : bool =
+  let rec aux = function
+    | [] -> true
+    | x :: xs ->
+        if x = n then true
+        else if n mod x = 0 then false
+        else aux (List.filter (fun i -> i mod x <> 0) xs)
   in
-  loop [] l
-;;
+  if n < 2 then false
+  else
+    let boundery = float_of_int n |> sqrt |> ceil |> int_of_float in
+    aux (List.init boundery (fun x -> x + 2))
 
-flatten [ One "a" ];;
-flatten [ One 1; Many [ One 2 ] ]
+(* List.init 100 (fun x -> x) *)
+(* |> List.iter (fun x -> if is_prime x then Printf.printf "%d " x) *)
 
 let hello () =
   print_endline
