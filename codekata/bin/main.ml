@@ -1,3 +1,12 @@
+let q2 () =
+  print_endline "2. Prime Number Check" ;
+  let open Codekata_lib.Question2 in
+  Printf.printf "  > First 100 prime numbers: " ;
+  List.init 100 (fun x -> x)
+  |> List.filter (fun x -> is_prime x)
+  |> List.iter (fun x -> Printf.printf "%d " x) ;
+  print_newline ()
+
 let q1 () =
   let open Codekata_lib.Question1 in
   print_endline "1. Odd or Even Sum" ;
@@ -7,4 +16,5 @@ let q1 () =
 
 let () =
   print_endline "Starting CodeKata..." ;
-  q1 ()
+  q1 () ;
+  q2 ()
