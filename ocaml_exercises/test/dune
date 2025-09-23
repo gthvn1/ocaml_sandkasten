@@ -1,0 +1,4 @@
+(test
+ (name beginner_test)
+ (modules beginner_test)
+ (libraries ocaml_exercises_lib ounit2))
