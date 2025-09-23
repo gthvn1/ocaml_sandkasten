@@ -15,3 +15,8 @@
 (package
   (name codekata)
   (synopsis "Practice with CodeKata an interactive platform for programming"))
+
+(package
+  (name ocaml_exercises)
+  (synopsis "Exercices inspired by Ninety-Nine Lisp Problems which in turn was based on Prolog problem list"))
+
