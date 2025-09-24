@@ -5,6 +5,7 @@
 - Run a project: `dune exec crepe`
 - Launch a REPL for a project: `dune utop crepe`
 - Browse module documentation in your terminal: `ocp-browser`
+- Look the source: `batcat $(ocamlfind query unix)/unix.mli`
 
 # Useful Resources
 - [OCaml](https://ocaml.org/)
