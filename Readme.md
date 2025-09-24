@@ -1,14 +1,14 @@
 # Hints
-- To check that everything is correct: `opam lint .`
-- Build all: `dune build`
-- Build a project: `dune build crepe`
+- Check for correctness: `opam lint .`
+- Build all targets: `dune build`
+- Build a specific project: `dune build crepe`
 - Run a project: `dune exec crepe`
-- Start a REPL for a project: `dune utop crepe`
+- Launch a REPL for a project: `dune utop crepe`
+- Browse module documentation in your terminal: `ocp-browser`
 
-# Some links
+# Useful Resources
 - [OCaml](https://ocaml.org/)
 - [OCaml Programming: Correct + Efficient + Beautiful](https://cs3110.github.io/textbook/cover.html)
-- [dune file](https://dune.readthedocs.io/en/stable/reference/dune/)
-- [dune-project file](https://dune.readthedocs.io/en/stable/reference/dune-project/)
+- [Dune file reference](https://dune.readthedocs.io/en/stable/reference/dune/)
+- [Dune-project file reference](https://dune.readthedocs.io/en/stable/reference/dune-project/)
 - [Opam](https://opam.ocaml.org/)
-
