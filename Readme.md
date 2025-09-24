@@ -1,7 +1,9 @@
 # Hints
 - To check that everything is correct: `opam lint .`
-- Build using: `dune build`
-- Run a project: `dune exec hello`
+- Build all: `dune build`
+- Build a project: `dune build crepe`
+- Run a project: `dune exec crepe`
+- Start a REPL for a project: `dune utop crepe`
 
 # Some links
 - [OCaml](https://ocaml.org/)
