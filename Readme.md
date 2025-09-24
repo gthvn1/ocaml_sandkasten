@@ -1,3 +1,7 @@
+This is my personal OCaml playground. A chaotic, ever-growing dune workspace where I dump all my toy projects,
+weird experiments, and half-baked ideas. Nothing here is polished, documented, or meant for public consumption.
+It’s just a sandbox for me to break things, test wild hypotheses, and occasionally stumble upon something cool.
+
 # Hints
 - Check for correctness: `opam lint .`
 - Build all targets: `dune build`
