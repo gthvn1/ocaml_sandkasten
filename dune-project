@@ -20,3 +20,6 @@
   (name ocaml_exercises)
   (synopsis "Exercices inspired by Ninety-Nine Lisp Problems which in turn was based on Prolog problem list"))
 
+(package
+  (name crepe)
+  (synopsis "A flat, simple, and served hot server. Intended for learning and experimentation."))

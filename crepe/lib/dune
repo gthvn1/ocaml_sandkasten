@@ -1,0 +1,3 @@
+(library
+ (name crepe)
+ (public_name crepe))
