@@ -1,1 +1,1 @@
-let () = Crepe.hello ()
+let () = Crepe.serve ()
