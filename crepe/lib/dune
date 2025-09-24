@@ -1,3 +1,4 @@
 (library
  (name crepe)
- (public_name crepe))
+ (public_name crepe)
+ (libraries unix))
