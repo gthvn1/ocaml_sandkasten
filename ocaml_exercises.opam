@@ -9,6 +9,7 @@ homepage: "https://github.com/gthvn1/ocaml_sandkasten"
 bug-reports: "https://github.com/gthvn1/ocaml_sandkasten/issues"
 depends: [
   "dune" {>= "3.20"}
+  "ounit2"
   "odoc" {with-doc}
 ]
 build: [

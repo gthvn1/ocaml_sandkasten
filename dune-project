@@ -18,12 +18,14 @@
 
 (package
   (name ocaml_exercises)
-  (synopsis "Exercices inspired by Ninety-Nine Lisp Problems which in turn was based on Prolog problem list"))
+  (synopsis "Exercices inspired by Ninety-Nine Lisp Problems which in turn was based on Prolog problem list")
+  (depends ounit2))
 
 (package
   (name crepe)
-  (synopsis "A flat, simple, and served hot server. Intended for learning and experimentation."))
+  (synopsis "A flat, simple, and served hot server. Intended for learning and experimentation"))
 
 (package
   (name maze)
-  (synopsis "A robot that pushes boxes in a Maze. Nothing more..."))
+  (synopsis "A robot that pushes boxes in a Maze. Nothing more")
+  (depends graphics))
