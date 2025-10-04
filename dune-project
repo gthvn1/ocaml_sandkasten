@@ -29,3 +29,8 @@
   (name maze)
   (synopsis "A robot that pushes boxes in a Maze. Nothing more")
   (depends graphics))
+
+(package
+  (name roguelike)
+  (synopsis "A simple roguelike game to have fun when programming")
+  (depends notty random))
