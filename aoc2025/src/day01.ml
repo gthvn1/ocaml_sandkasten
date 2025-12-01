@@ -2,22 +2,16 @@ type dir = Left | Right
 
 let get_rotation (s : string) : (dir * int) option =
   try
-    let first_char = String.sub s 0 1 in
-    let rest = String.sub s 1 (String.length s - 1) in
-    match (first_char, int_of_string rest) with
-    | "l", x ->
-        Some (Left, x)
-    | "L", x ->
-        Some (Left, x)
-    | "r", x ->
-        Some (Right, x)
-    | "R", x ->
-        Some (Right, x)
+    let dir_str = String.sub s 0 1 in
+    let steps = String.sub s 1 (String.length s - 1) |> int_of_string in
+    match dir_str with
+    | "l" | "L" ->
+        Some (Left, steps)
+    | "r" | "R" ->
+        Some (Right, steps)
     | _ ->
         None
   with _ -> None
-
-let normalize (x : int) : int * int = (x / 100, x mod 100)
 
 (* Rotate the dial according to rotation.
    For example if value is 11, "R8" will generate (19, 0)
@@ -29,15 +23,31 @@ let rotate (value : int) (rotation : string) : int * int =
       failwith "Unable to get the rotation"
   | Some (d, x) -> (
       (* normalize x *)
-      let n, x' = normalize x in
+      let x' = x mod 100 in
       match d with
       | Left ->
-          let wrap = if value - x' <= 0 then 1 else 0 in
           let v' = (value - x' + 100) mod 100 in
-          (v', n + wrap)
+          (v', if v' = 0 then 1 else 0)
       | Right ->
-          let wrap = if value + x' >= 100 then 1 else 0 in
           let v' = (value + x') mod 100 in
-          (v', n + wrap) )
+          (v', if v' = 0 then 1 else 0) )
 
-let part1 () = print_endline "TODO: day1"
+let rotations_sample =
+  ["L68"; "L30"; "R48"; "L5"; "R60"; "L55"; "L1"; "L99"; "R14"; "L82"]
+
+module Day1 = struct
+  let filename = "aoc2025/files/day01.txt"
+end
+
+module D1 = Utils.Openday (Day1)
+
+let part1 () =
+  let rotations = D1.get_string_list () in
+  let final_pos, total_hits =
+    List.fold_left
+      (fun (pos, hits) str ->
+        let new_pos, h = rotate pos str in
+        (new_pos, h + hits) )
+      (50, 0) rotations
+  in
+  Printf.printf "reached %d and hits 0 %d times\n" final_pos total_hits
