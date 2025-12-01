@@ -1,0 +1,13 @@
+(executable
+ (name main)
+ (public_name aoc2025)
+ ;; only use main
+ (modules main)
+ (libraries aoc2025)
+ (package aoc2025))
+
+(library
+ (name aoc2025)
+ (public_name aoc2025)
+ ;; include all files except main.ml
+ (modules :standard \ main))
