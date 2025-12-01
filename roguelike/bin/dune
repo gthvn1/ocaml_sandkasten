@@ -2,4 +2,4 @@
  (name main)
  (public_name roguelike)
  (package roguelike)
- (libraries notty random))
+ (libraries notty notty.unix))
