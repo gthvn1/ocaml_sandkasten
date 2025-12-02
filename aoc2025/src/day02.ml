@@ -17,7 +17,7 @@ let split_string (s : string) (chunk_size : int) : string list =
   in
   aux [] s
 
-(* return true if a sequence of n digits is repeated_twice.
+(* return true if a sequence of n digits is repeated.
    Example:
      for n = 1: 6464 -> false
      for n = 2: 6464 -> true
