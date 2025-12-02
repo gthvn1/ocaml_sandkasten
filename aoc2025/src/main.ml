@@ -1,1 +1,4 @@
-let () = Aoc2025.Day01.part1 () ; Aoc2025.Day01.part2 ()
+let () =
+  let open Aoc2025 in
+  Day01.(part1 () ; part2 ()) ;
+  Day02.part1 ()
