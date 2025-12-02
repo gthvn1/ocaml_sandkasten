@@ -5,12 +5,15 @@
    *)
 let split_string (s : string) (chunk_size : int) : string list =
   let rec aux acc str =
-    if String.length str = 0 then List.rev acc
-    else if String.length str = chunk_size then List.rev (str :: acc)
-    else
-      aux
-        (String.sub str 0 chunk_size :: acc)
-        (String.sub str chunk_size (String.length str - chunk_size))
+    match String.length str with
+    | 0 ->
+        List.rev acc
+    | x when x = chunk_size ->
+        List.rev (str :: acc)
+    | x ->
+        aux
+          (String.sub str 0 chunk_size :: acc)
+          (String.sub str chunk_size (x - chunk_size))
   in
   aux [] s
 
@@ -27,19 +30,23 @@ let split_string (s : string) (chunk_size : int) : string list =
   *)
 let repeated_fixed_size (s : string) (len : int) : bool =
   (* size of the string must be at least 2 times len *)
-  if String.length s < 2 * len then false
-  else if
-    (* and it must be a multiple of len *)
-    String.length s mod len <> 0
-  then false
-  else
-    let chunks = split_string s len in
-    if List.length chunks < 2 then false
-    else
-      let h = List.hd chunks in
-      let l = List.filter (fun s -> s <> h) (List.tl chunks) in
-      List.length l = 0
-(* We need to split string into: 0 - len, len - 2*len, 2*len - 3*len ...
+  match String.length s with
+  | x when x < 2 * len ->
+      (* string must have a size at least twice the len *)
+      false
+  | x when x mod len <> 0 ->
+      (* string must have a size that is a multiple of len *)
+      false
+  | _ ->
+      let chunks = split_string s len in
+      if List.length chunks < 2 then false
+      else
+        let h = List.hd chunks in
+        let l = List.filter (fun s -> s <> h) (List.tl chunks) in
+        List.length l = 0
+
+(*
+  We need to split string into: 0 - len, len - 2*len, 2*len - 3*len ...
   For example for len = 2: 0->2 ; 2->4; 4->6 until reaching lentth of string
 *)
 
