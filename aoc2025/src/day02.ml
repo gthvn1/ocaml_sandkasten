@@ -65,4 +65,25 @@ let repeated (s : string) : bool =
   in
   aux 1
 
+let repeated_int x = string_of_int x |> repeated
+
+(* transform a string "XX-YY" into a tuple int * int *)
+let get_range (s : string) : int * int =
+  let l = String.split_on_char '-' s in
+  if List.length l <> 2 then failwith "Two items are expected in range" ;
+  (List.hd l |> int_of_string, List.tl l |> List.hd |> int_of_string)
+
+(* Returns the number of repeated int in a given range *)
+let repeated_in_range (debut : int) (fin : int) : int =
+  let rec aux acc idx =
+    if idx = fin then if repeated_int idx then acc + 1 else acc
+    else if repeated_int idx then aux (acc + 1) (idx + 1)
+    else aux acc (idx + 1)
+  in
+  aux 0 debut
+
+module D2 = Utils.Openday (struct
+  let filename = "aoc2025/files/day02.txt"
+end)
+
 let part1 () = print_endline "TODO"
