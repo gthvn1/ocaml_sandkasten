@@ -18,6 +18,7 @@ let d = One "d";;
 Many [ c; d ];;
 flatten [ One "a"; Many [ One "b"; Many [ One "c"; One "d" ]; One "e" ] ]
 (* Expected : string list = ["a"; "b"; "c"; "d"; "e"] *)
+;;
 
 (* ----------- IS PRIME --------- *)
 let is_prime (n : int) : bool =

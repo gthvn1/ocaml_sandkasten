@@ -16,13 +16,13 @@ let of_string (str : string) (row : int) : Pos.t option * PosSet.t =
   let boxes = ref PosSet.empty in
   String.to_seq str
   |> Seq.iteri (fun x c ->
-         match c with
-         | '@' ->
-             robot := Some (x, row)
-         | 'O' ->
-             boxes := PosSet.add (x, row) !boxes
-         | _ ->
-             () ) ;
+      match c with
+      | '@' ->
+          robot := Some (x, row)
+      | 'O' ->
+          boxes := PosSet.add (x, row) !boxes
+      | _ ->
+          () ) ;
   (!robot, !boxes)
 
 let of_list (lst : string list) : t =
