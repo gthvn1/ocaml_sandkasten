@@ -51,4 +51,41 @@ let find_largest (lst : int list) : int =
   in
   aux 9 None None lst
 
-let part1 () = print_endline "TODO: day3 part1"
+(* Part 2: another approach: filter starting from 1 until have a list equal
+   or less in lenght than expected number of digits and add the missing
+   part once filtered too much... *)
+
+type pos = int * int
+
+(* take a string that is numbers and return a list of tuple that
+   is (idx, val).
+   Example:
+     "123" -> [ (0, 1); (1, 2); (2; 3)]*)
+let string_to_tuple (s : string) : pos list =
+  let l = string_to_ints s in
+  let rec aux acc idx = function
+    | [] ->
+        List.rev acc
+    | x :: xs ->
+        aux ((idx, x) :: acc) (idx + 1) xs
+  in
+  aux [] 0 l
+
+let filter_tuple (value : int) (l : pos list) : pos list * pos list =
+  let rec aux acc1 acc2 = function
+    | [] ->
+        (List.rev acc1, List.rev acc2)
+    | ((_, x) as t) :: xs ->
+        if x = value then aux acc1 (t :: acc2) xs else aux (t :: acc1) acc2 xs
+  in
+  aux [] [] l
+
+module D2 = Utils.Openday (struct
+  let filename = "aoc2025/files/day03.txt"
+end)
+
+let part1 () =
+  let input = D2.get_string_list () in
+  let l = List.map (fun s -> string_to_ints s |> find_largest) input in
+  let output = List.fold_left (fun acc x -> acc + x) 0 l in
+  Printf.printf "Day3 part1: %d" output
