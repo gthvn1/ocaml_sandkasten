@@ -16,7 +16,8 @@
 
 (package
  (name parse_xapi_db)
- (synopsis "Parse xapi db and generate a static HTML to explore it"))
+ (synopsis "Parse xapi db and generate a static HTML to explore it")
+ (depends xmlm))
 
 (package
  (name aoc2025)
