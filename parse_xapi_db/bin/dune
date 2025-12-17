@@ -1,0 +1,4 @@
+(executable
+ (name main)
+ (public_name parse_xapi_db)
+ (package parse_xapi_db))

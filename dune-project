@@ -15,6 +15,10 @@
 (bug_reports "https://github.com/gthvn1/ocaml_sandkasten/issues")
 
 (package
+ (name parse_xapi_db)
+ (synopsis "Parse xapi db and generate a static HTML to explore it"))
+
+(package
  (name aoc2025)
  (synopsis "Advent of Code 2025"))
 
