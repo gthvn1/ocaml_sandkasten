@@ -1,5 +1,5 @@
 (executable
  (name main)
  (public_name parse_xapi_db)
- (libraries xmlm)
+ (libraries core xmlm)
  (package parse_xapi_db))
