@@ -1,4 +1,4 @@
 (library
- (name core)
+ (name xdb_core)
  (modules database)
  (libraries xmlm))
