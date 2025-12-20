@@ -1,2 +1,2 @@
 - The [Synacor Challenge](https://web.archive.org/web/20230206005149/https://challenge.synacor.com/) was an online programming puzzle created by [Eric Wastl](https://x.com/ericwastl), the mind behind [Advent of Code](https://adventofcode.com).
-- run: `dune exec synacore -- challenge.bin`
+- run: `dune exec synacore -- challenge.bin 2>run.log`
