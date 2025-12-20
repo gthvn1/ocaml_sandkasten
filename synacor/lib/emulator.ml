@@ -1,51 +1,57 @@
-type state = {mem: Memory.t; ip: int (* Instruction pointer *)}
+type state = Halted | Running
+
+type vm = {mem: Memory.t; ip: int (* Instruction pointer *); state: state}
 
 type chunk = int * int option * int option * int option
 
 let read_mem_opt (mem : int array) (pos : int) : int option =
   Memory.read mem ~addr:pos
 
-(** [decode state] returns the four word (chunk) under IP that is the
+(** [decode vm] returns the four word (chunk) under IP that is the
     maximum size of an instruction. If only one word remains the last
     three can be None. If there is no word we are out or memory and
     an error is raised. *)
-let fetch state : chunk * state =
-  match read_mem_opt state.mem state.ip with
+let fetch vm : chunk * vm =
+  match read_mem_opt vm.mem vm.ip with
   | None ->
-      failwith (Printf.sprintf "Out of memory: trying access Mem[0x%x]" state.ip)
+      failwith (Printf.sprintf "Out of memory: trying access Mem[0x%x]" vm.ip)
   | Some v ->
       ( ( v
-        , read_mem_opt state.mem state.ip
-        , read_mem_opt state.mem state.ip
-        , read_mem_opt state.mem state.ip )
-      , state )
+        , read_mem_opt vm.mem vm.ip
+        , read_mem_opt vm.mem vm.ip
+        , read_mem_opt vm.mem vm.ip )
+      , vm )
 
-let decode (fetch_step : chunk * state) : Insn.t * state =
-  let (m1, _, _, _), state = fetch_step in
+let decode (fetch_step : chunk * vm) : Insn.t * vm =
+  let (m1, _, _, _), vm = fetch_step in
   match Insn.of_int m1 with
   | Noop ->
-      (Noop, state)
+      (* Noop just update ip*)
+      (Noop, {vm with ip= vm.ip + 1})
   | Out ->
-      failwith "TODO: out"
+      failwith "TODO: decode out"
   | Halt ->
-      (Halt, state)
+      (Halt, {vm with state= Halted})
   | Unknown ->
       failwith (Printf.sprintf "TODO: unknown opcode 0x%02x" m1)
 
-let execute (decode_step : Insn.t * state) : state =
+let execute (decode_step : Insn.t * vm) : vm =
   match decode_step with
-  | Noop, state ->
-      failwith (Printf.sprintf "TODO: execute Noop at 0x%02x" state.ip)
-  | Halt, state ->
-      failwith (Printf.sprintf "TODO: execute Halt at 0x%02x" state.ip)
-  | Out, state ->
-      failwith (Printf.sprintf "TODO: execute Out at 0x%02x" state.ip)
-  | Unknown, state ->
-      failwith (Printf.sprintf "ERROR: unknown instruction to execute at 0x%02x" state.ip)
+  | Noop, vm ->
+      vm
+  | Halt, vm ->
+      failwith (Printf.sprintf "TODO: execute Halt at 0x%02x" vm.ip)
+  | Out, vm ->
+      failwith (Printf.sprintf "TODO: execute Out at 0x%02x" vm.ip)
+  | Unknown, vm ->
+      failwith
+        (Printf.sprintf "ERROR: unknown instruction to execute at 0x%02x" vm.ip)
 
 let run (prog : bytes) : unit =
   let mem = Memory.load prog in
   Memory.dump mem ;
-  let init_state = {mem; ip= 0} in
-  let new_state = init_state |> fetch |> decode |> execute in
-  Printf.printf "Ends at instruction pointer %x\n" new_state.ip
+  let rec loop vm =
+    if vm.state = Halted then Printf.printf "VM halted"
+    else vm |> fetch |> decode |> execute |> loop
+  in
+  loop {mem; ip= 0; state= Running}
