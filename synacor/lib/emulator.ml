@@ -1,6 +1,10 @@
 type state = Halted | Running
 
-type vm = {mem: Memory.t; ip: int (* Instruction pointer *); state: state}
+type vm =
+  { mem: Memory.t
+  ; ip: int (* Instruction pointer *)
+  ; state: state
+  ; breakpoint: int option }
 
 let read_mem_opt (mem : int array) (pos : int) : int option =
   Memory.read mem ~addr:pos
@@ -41,12 +45,16 @@ let execute (decode_step : Insn.t * vm) : vm =
       failwith
         (Printf.sprintf "ERROR: unknown instruction to execute at 0x%02x)" vm.ip)
 
-let run (prog : bytes) : unit =
+let prompt () = failwith "TODO: allow user to enter a command at the prompt"
+
+let run ?(debug_mode = false) ?(breakpoint : int option = None) (prog : bytes) :
+    unit =
   let mem = Memory.load prog in
   let rec loop vm =
+    if debug_mode then prompt () ;
     prerr_endline "   ----- MEM -----" ;
     prerr_endline (Memory.to_str ~mem:vm.mem ~pos:vm.ip) ;
     if vm.state = Halted then Printf.printf "VM halted"
     else vm |> fetch |> decode |> execute |> loop
   in
-  loop {mem; ip= 0; state= Running}
+  loop {mem; ip= 0; state= Running; breakpoint}
