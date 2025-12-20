@@ -43,6 +43,8 @@ let execute (decode_step : Insn.t * state) : state =
       failwith "ERROR: unknown instruction to execute"
 
 let run (prog : bytes) : unit =
+  let mem = Memory.load prog in
+  Memory.dump mem ;
   let init_state = {prog; ip= 0} in
   let new_state = init_state |> fetch |> decode |> execute in
   Printf.printf "Ends at instruction pointer %x\n" new_state.ip
