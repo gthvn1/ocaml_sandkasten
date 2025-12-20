@@ -16,6 +16,9 @@ let load (rom : bytes) : t =
   in
   aux [] 0
 
+let read (mem : t) ~(addr : int) : int option =
+  try Some (Array.get mem addr) with _ -> None
+
 let dump (mem : t) =
   (* just print first ten value *)
   for i = 0 to 9 do
