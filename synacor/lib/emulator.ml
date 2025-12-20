@@ -40,7 +40,8 @@ let execute (decode_step : Insn.t * vm) : vm =
   | Noop, vm ->
       vm
   | Halt, vm ->
-      failwith (Printf.sprintf "TODO: execute Halt at 0x%02x" vm.ip)
+      (* Decoder has set the state so nothing to do here*)
+      vm
   | Out, vm ->
       failwith (Printf.sprintf "TODO: execute Out at 0x%02x" vm.ip)
   | Unknown, vm ->
@@ -49,8 +50,9 @@ let execute (decode_step : Insn.t * vm) : vm =
 
 let run (prog : bytes) : unit =
   let mem = Memory.load prog in
-  Memory.dump mem ;
   let rec loop vm =
+    print_endline "   ----- MEM -----" ;
+    print_endline (Memory.to_str ~mem:vm.mem ~pos:vm.ip) ;
     if vm.state = Halted then Printf.printf "VM halted"
     else vm |> fetch |> decode |> execute |> loop
   in

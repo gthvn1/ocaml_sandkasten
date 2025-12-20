@@ -19,8 +19,21 @@ let load (rom : bytes) : t =
 let read (mem : t) ~(addr : int) : int option =
   try Some (Array.get mem addr) with _ -> None
 
-let dump (mem : t) =
-  (* just print first ten value *)
-  for i = 0 to 9 do
-    Printf.printf "Mem[%02d] : 0x%04X\n" i (Array.get mem i)
-  done
+(** [to_str mem] return a string that is memory around the current
+    instruction pointer. It is used for debugging. *)
+let to_str ~(mem : t) ~(pos : int) : string =
+  let mem_size = Array.length mem in
+  if mem_size = 0 then "Empty mem"
+  else
+    let start = max 0 (pos - 5) in
+    let fin = min (mem_size - 1) (pos + 5) in
+    let output = ref "" in
+    for i = start to fin do
+      let mem_str =
+        if pos = i then
+          Printf.sprintf "=> Mem[%03d]:0x%04X\n" i (Array.get mem i)
+        else Printf.sprintf "   Mem[%03d]:0x%04X\n" i (Array.get mem i)
+      in
+      output := !output ^ mem_str
+    done ;
+    !output
