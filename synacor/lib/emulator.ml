@@ -1,10 +1,13 @@
 type state = Halted | Running
 
+type mode = Normal | Step
+
 type vm =
   { mem: Memory.t
   ; ip: int (* Instruction pointer *)
   ; state: state
-  ; breakpoint: int option }
+  ; breakpoint: int option
+  ; mode: mode }
 
 let read_mem_opt (mem : int array) (pos : int) : int option =
   Memory.read mem ~addr:pos
@@ -45,16 +48,56 @@ let execute (decode_step : Insn.t * vm) : vm =
       failwith
         (Printf.sprintf "ERROR: unknown instruction to execute at 0x%02x)" vm.ip)
 
-let prompt () = failwith "TODO: allow user to enter a command at the prompt"
+(* [with_raw_input f] allows to execute function [f] while disabling
+   line buffering to avoid typing enter. *)
+let with_raw_input f vm =
+  let open Unix in
+  let fd = descr_of_in_channel In_channel.stdin in
+  let old = tcgetattr fd in
+  let raw = {old with c_icanon= false} in
+  tcsetattr fd TCSANOW raw ;
+  try
+    let new_vm = f vm in
+    tcsetattr fd TCSANOW old ; new_vm
+  with e -> tcsetattr fd TCSANOW old ; raise e
+
+let rec prompt vm =
+  Printf.printf "[s]tep [p]rint [c]ontinue [q]uit\n> %!" ;
+  match In_channel.input_char stdin with
+  | None ->
+      failwith "not expected"
+  | Some 'q' | Some 'Q' ->
+      exit 0
+  | Some 'p' | Some 'P' ->
+      prerr_endline "   ----- MEM -----" ;
+      prerr_endline (Memory.to_str ~mem:vm.mem ~pos:vm.ip) ;
+      prompt vm
+  | Some 's' | Some 'S' ->
+      print_newline () ; {vm with mode= Step}
+  | Some 'c' ->
+      print_newline () ; {vm with mode= Normal}
+  | Some cmd ->
+      Printf.printf "\nUnkown command %c\n%!" cmd ;
+      prompt vm
+
+let is_breakpoint (vm : vm) (breakpoint : int option) : bool =
+  match breakpoint with None -> false | Some v -> vm.ip = v
 
 let run ?(debug_mode = false) ?(breakpoint : int option = None) (prog : bytes) :
     unit =
   let mem = Memory.load prog in
   let rec loop vm =
-    if debug_mode then prompt () ;
-    prerr_endline "   ----- MEM -----" ;
-    prerr_endline (Memory.to_str ~mem:vm.mem ~pos:vm.ip) ;
-    if vm.state = Halted then Printf.printf "VM halted"
-    else vm |> fetch |> decode |> execute |> loop
+    if vm.state = Halted then (Printf.printf "VM halted" ; exit 0) ;
+    let vm =
+      if vm.mode = Step || is_breakpoint vm breakpoint then
+        with_raw_input prompt vm
+      else vm
+    in
+    vm |> fetch |> decode |> execute |> loop
   in
-  loop {mem; ip= 0; state= Running; breakpoint}
+  loop
+    { mem
+    ; ip= 0
+    ; state= Running
+    ; breakpoint
+    ; mode= (if debug_mode then Step else Normal) }
