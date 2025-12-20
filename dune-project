@@ -15,6 +15,10 @@
 (bug_reports "https://github.com/gthvn1/ocaml_sandkasten/issues")
 
 (package
+ (name synacor)
+ (synopsis "Synacor challenge"))
+
+(package
  (name xapi_db)
  (synopsis "Parse xapi db and generate a static HTML to explore it")
  (depends xmlm js_of_ocaml))
