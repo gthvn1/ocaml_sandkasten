@@ -38,10 +38,12 @@ let decode (fetch_step : Insn.chunk * vm) : Insn.t * vm =
 
 let execute (decode_step : Insn.t * vm) : vm =
   match decode_step with
-  | Noop, vm ->
-      vm
   | Halt, vm ->
       {vm with state= Halted}
+  | Jmp addr, vm ->
+      {vm with ip= addr}
+  | Noop, vm ->
+      vm
   | Out c, vm ->
       Printf.printf "%c%!" c ; vm
   | Unknown, vm ->
