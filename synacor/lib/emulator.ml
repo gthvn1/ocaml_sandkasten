@@ -69,6 +69,7 @@ let rec prompt vm =
   | Some 'q' | Some 'Q' ->
       exit 0
   | Some 'p' | Some 'P' ->
+      print_newline () ;
       prerr_endline "   ----- MEM -----" ;
       prerr_endline (Memory.to_str ~mem:vm.mem ~pos:vm.ip) ;
       prompt vm
