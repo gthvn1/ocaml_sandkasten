@@ -17,7 +17,7 @@ let load (rom : bytes) : t =
   aux [] 0
 
 let read (mem : t) ~(addr : int) : int option =
-  try Some (Array.get mem addr) with _ -> None
+  try Some mem.(addr) with _ -> None
 
 (** [to_str mem] return a string that is memory around the current
     instruction pointer. It is used for debugging. *)
@@ -30,9 +30,8 @@ let to_str ~(mem : t) ~(pos : int) : string =
     let output = ref "" in
     for i = start to fin do
       let mem_str =
-        if pos = i then
-          Printf.sprintf "=> Mem[%03d]:0x%04X\n" i (Array.get mem i)
-        else Printf.sprintf "   Mem[%03d]:0x%04X\n" i (Array.get mem i)
+        if pos = i then Printf.sprintf "=> Mem[%03d]:0x%04X\n" i mem.(i)
+        else Printf.sprintf "   Mem[%03d]:0x%04X\n" i mem.(i)
       in
       output := !output ^ mem_str
     done ;
