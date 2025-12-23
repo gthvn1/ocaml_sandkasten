@@ -5,6 +5,7 @@ type t =
   | Jf of (int * int)
   | Noop
   | Out of char
+  | Set of (int * int)
   | Unknown
 
 (** This is the memory area that contains the maximum number of words
@@ -12,6 +13,16 @@ type t =
     is required. Others are optional and their usage depends on the kind
     of the instruction. *)
 type chunk = int * int option * int option * int option
+
+(** [decode_set chunk] decodes the SET instruction. It uses 2 parameters
+    of the chunk. It returns Set addr value and the
+    size of the instruction is 3. *)
+let decode_set (c : chunk) : (t * int) option =
+  match c with
+  | _, None, _, _ | _, _, None, _ ->
+      None
+  | _, Some addr, Some value, _ ->
+      Some (Set (addr, value), 3)
 
 (** [decode_jmp chunk] decodes the JMP instruction. It uses 1 parameter
     of the chunk that is the address. So it returns Jmp addr and the
@@ -56,8 +67,10 @@ let decode_out (c : chunk) : (t * int) option =
 let decode (c : chunk) : (t * int) option =
   let c1, _, _, _ = c in
   match c1 with
-  | 0 ->
+  | 0x0 ->
       Some (Halt, 0)
+  | 0x1 ->
+      decode_set c
   | 0x6 ->
       decode_jmp c
   | 0x7 ->
@@ -85,5 +98,7 @@ let to_string (insn : t) : string =
       "NOOP"
   | Out _ ->
       "OUT"
+  | Set _ ->
+      "SET"
   | Unknown ->
       "UNKNOWN"

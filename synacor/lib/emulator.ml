@@ -55,6 +55,9 @@ let execute (decode_step : Insn.t * vm) : vm =
       vm
   | Out c, vm ->
       Printf.printf "%c%!" c ; vm
+  | Set (addr, value), vm ->
+      Memory.write vm.mem ~addr ~value ;
+      vm
   | Unknown, vm ->
       failwith
         (Printf.sprintf "ERROR: unknown instruction to execute at 0x%02x)" vm.ip)

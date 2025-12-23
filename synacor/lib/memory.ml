@@ -54,6 +54,18 @@ let load (rom : bytes) : t =
   in
   {mem= aux [] 0; regs= Array.make Layout.num_regs 0}
 
+(** [write mem addr value] sets register at address [addr] of [mem] to
+    [value]. It raises an error if address is not a register. *)
+let write (memory : t) ~(addr : int) ~(value : int) : unit =
+  if value > 65535 then
+    failwith
+      (Printf.sprintf "Cannot write %d into register (too big value)" value) ;
+  if not (is_reg addr) then
+    failwith
+      (Printf.sprintf "Error: Try to write a register at address 0x%x" addr) ;
+  let idx = addr - Layout.reg_min in
+  Array.set memory.regs idx value
+
 (** [read mem addr] returns the value at address [addr].
     Between 0 to 32767 it accesses the RAM, from 32768, 32769, ... 32775
     it is the registers and above 32776 it is not memory. *)
