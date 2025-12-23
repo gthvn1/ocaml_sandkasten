@@ -42,6 +42,10 @@ let execute (decode_step : Insn.t * vm) : vm =
       {vm with state= Halted}
   | Jmp addr, vm ->
       {vm with ip= addr}
+  | Jt (value, addr), vm ->
+      if value <> 0 then {vm with ip= addr} else vm
+  | Jf (value, addr), vm ->
+      if value = 0 then {vm with ip= addr} else vm
   | Noop, vm ->
       vm
   | Out c, vm ->

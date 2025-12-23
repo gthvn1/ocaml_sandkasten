@@ -1,4 +1,11 @@
-type t = Halt | Jmp of int | Noop | Out of char | Unknown
+type t =
+  | Halt
+  | Jmp of int
+  | Jt of (int * int)
+  | Jf of (int * int)
+  | Noop
+  | Out of char
+  | Unknown
 
 (** This is the memory area that contains the maximum number of words
     required by an instruction. The first integer is the opcode and it
@@ -11,6 +18,26 @@ type chunk = int * int option * int option * int option
     size of the instruction is 2. *)
 let decode_jmp (c : chunk) : (t * int) option =
   match c with _, None, _, _ -> None | _, Some addr, _, _ -> Some (Jmp addr, 2)
+
+(** [decode_jt chunk] decodes the JT instruction. It uses 2 parameters
+    of the chunk that is the condition of the jump and the address.
+    Returns Jt val addr and the size of the instruction is 3. *)
+let decode_jt (c : chunk) : (t * int) option =
+  match c with
+  | _, None, _, _ | _, _, None, _ ->
+      None
+  | _, Some value, Some addr, _ ->
+      Some (Jt (value, addr), 3)
+
+(** [decode_jt chunk] decodes the JTinstruction. It uses 2 parameters
+    of the chunk that is the condition of the jump and the address.
+    Returns Jt val addr and the size of the instruction is 3. *)
+let decode_jf (c : chunk) : (t * int) option =
+  match c with
+  | _, None, _, _ | _, _, None, _ ->
+      None
+  | _, Some value, Some addr, _ ->
+      Some (Jf (value, addr), 3)
 
 (** [decode_out chunk] decodes the OUT instruction. It uses 1 parameter
     of the chunk that is the character to be printed. It returns OUT char
@@ -33,6 +60,10 @@ let decode (c : chunk) : (t * int) option =
       Some (Halt, 0)
   | 0x6 ->
       decode_jmp c
+  | 0x7 ->
+      decode_jt c
+  | 0x8 ->
+      decode_jf c
   | 0x13 ->
       decode_out c
   | 0x15 ->
@@ -46,6 +77,10 @@ let to_string (insn : t) : string =
       "HALT"
   | Jmp _ ->
       "JUMP"
+  | Jt _ ->
+      "JT"
+  | Jf _ ->
+      "JF"
   | Noop ->
       "NOOP"
   | Out _ ->
