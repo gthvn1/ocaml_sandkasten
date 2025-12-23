@@ -9,8 +9,8 @@ type vm =
   ; breakpoint: int option
   ; mode: mode }
 
-let read_mem_opt (mem : int array) (pos : int) : int option =
-  Memory.read mem ~addr:pos
+let read_mem_opt (mem : Memory.t) (addr : int) : int option =
+  try Some (Memory.read mem ~addr) with _ -> None
 
 (** [decode vm] returns the four word (chunk) under IP that is the
     maximum size of an instruction. If only one word remains the last
@@ -43,9 +43,14 @@ let execute (decode_step : Insn.t * vm) : vm =
   | Jmp addr, vm ->
       {vm with ip= addr}
   | Jt (value, addr), vm ->
-      if value <> 0 then {vm with ip= addr} else vm
+      (* If addr is a reg address read its value from memory *)
+      let open Memory in
+      let v = if is_reg value then read vm.mem ~addr:value else value in
+      if v <> 0 then {vm with ip= addr} else vm
   | Jf (value, addr), vm ->
-      if value = 0 then {vm with ip= addr} else vm
+      let open Memory in
+      let v = if is_reg value then read vm.mem ~addr:value else value in
+      if v = 0 then {vm with ip= addr} else vm
   | Noop, vm ->
       vm
   | Out c, vm ->
@@ -77,7 +82,7 @@ let rec prompt vm =
   | Some 'p' | Some 'P' ->
       print_newline () ;
       prerr_endline "   ----- MEM -----" ;
-      prerr_endline (Memory.to_str ~mem:vm.mem ~pos:vm.ip) ;
+      prerr_endline (Memory.to_str ~memory:vm.mem ~addr:vm.ip) ;
       prompt vm
   | Some 's' | Some 'S' ->
       print_newline () ; {vm with mode= Step}
