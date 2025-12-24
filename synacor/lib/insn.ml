@@ -68,7 +68,7 @@ let decode (c : chunk) : (t * int) option =
   let c1, _, _, _ = c in
   match c1 with
   | 0x0 ->
-      Some (Halt, 0)
+      Some (Halt, 1)
   | 0x1 ->
       decode_set c
   | 0x6 ->
@@ -82,23 +82,23 @@ let decode (c : chunk) : (t * int) option =
   | 0x15 ->
       Some (Noop, 1)
   | _ ->
-      Some (Unknown, 0)
+      failwith (Printf.sprintf "Unknown instruction 0x%x" c1)
 
 let to_string (insn : t) : string =
   match insn with
   | Halt ->
       "HALT"
-  | Jmp _ ->
-      "JUMP"
-  | Jt _ ->
-      "JT"
-  | Jf _ ->
-      "JF"
+  | Jmp addr ->
+      Printf.sprintf "JUMP 0x%x" addr
+  | Jt (value, addr) ->
+      Printf.sprintf "JT %d 0x%x" value addr
+  | Jf (value, addr) ->
+      Printf.sprintf "JF %d 0x%x" value addr
   | Noop ->
       "NOOP"
-  | Out _ ->
-      "OUT"
-  | Set _ ->
-      "SET"
+  | Out c ->
+      Printf.sprintf "OUT %c" c
+  | Set (reg, addr) ->
+      Printf.sprintf "SET %d 0x%x" reg addr
   | Unknown ->
       "UNKNOWN"

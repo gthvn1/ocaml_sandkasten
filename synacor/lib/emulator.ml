@@ -36,6 +36,11 @@ let decode (fetch_step : Insn.chunk * vm) : Insn.t * vm =
   | Some (insn, size) ->
       (insn, {vm with ip= vm.ip + size})
 
+let disassemble (decode_step : Insn.t * vm) : vm =
+  let insn, vm = decode_step in
+  Printf.printf "%04d| %s\n" vm.ip (Insn.to_string insn) ;
+  vm
+
 let execute (decode_step : Insn.t * vm) : vm =
   match decode_step with
   | Halt, vm ->
@@ -98,8 +103,8 @@ let rec prompt vm =
 let is_breakpoint (vm : vm) (breakpoint : int option) : bool =
   match breakpoint with None -> false | Some v -> vm.ip = v
 
-let run ?(debug_mode = false) ?(breakpoint : int option = None) (prog : bytes) :
-    unit =
+let run ?(debug_mode = false) ?(breakpoint : int option = None) ?(disas = false)
+    (prog : bytes) : unit =
   let mem = Memory.load prog in
   let rec loop vm =
     if vm.state = Halted then (Printf.printf "VM halted" ; exit 0) ;
@@ -108,7 +113,8 @@ let run ?(debug_mode = false) ?(breakpoint : int option = None) (prog : bytes) :
         with_raw_input prompt vm
       else vm
     in
-    vm |> fetch |> decode |> execute |> loop
+    if disas then vm |> fetch |> decode |> disassemble |> loop
+    else vm |> fetch |> decode |> execute |> loop
   in
   loop
     { mem
