@@ -20,23 +20,21 @@ let read_mem_opt (mem : Memory.t) (addr : int) : int option =
     three can be None. If there is no word we are out of memory and
     an error is raised. *)
 let fetch vm : Insn.chunk * vm =
+  let read i = read_mem_opt vm.mem (vm.ip + i) in
   match read_mem_opt vm.mem vm.ip with
   | None ->
       failwith
         (Printf.sprintf "Out of memory: trying to access Mem[0x%x]" vm.ip)
-  | Some v ->
-      ( ( v
-        , read_mem_opt vm.mem (vm.ip + 1)
-        , read_mem_opt vm.mem (vm.ip + 2)
-        , read_mem_opt vm.mem (vm.ip + 3) )
-      , vm )
+  | Some opcode ->
+      ({opcode; ops= [read 1; read 2; read 3]}, vm)
 
 let decode (fetch_step : Insn.chunk * vm) : Insn.t * vm =
-  let ((c1, _, _, _) as chunk), vm = fetch_step in
+  let chunk, vm = fetch_step in
   match Insn.decode chunk with
   | None ->
       failwith
-        (Printf.sprintf "Failed to decode instruction 0x%02x at 0x%02x" c1 vm.ip)
+        (Printf.sprintf "Failed to decode instruction 0x%02x at 0x%02x"
+           chunk.opcode vm.ip )
   | Some (insn, size) ->
       (insn, {vm with ip= vm.ip + size})
 

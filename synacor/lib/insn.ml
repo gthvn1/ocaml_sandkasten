@@ -14,113 +14,95 @@ type t =
     required by an instruction. The first integer is the opcode and it
     is required. Others are optional and their usage depends on the kind
     of the instruction. *)
-type chunk = int * int option * int option * int option
+type chunk = {opcode: int; ops: int option list}
 
-(* ----- HELPERS ----- *)
-let get_one_arg chunk : int option =
-  match chunk with _, None, _, _ -> None | _, Some v, _, _ -> Some v
-
-let get_two_args chunk : (int * int) option =
-  match chunk with
-  | _, None, _, _ | _, _, None, _ ->
-      None
-  | _, Some a, Some b, _ ->
-      Some (a, b)
-
-let get_three_args chunk : (int * int * int) option =
-  match chunk with
-  | _, None, _, _ | _, _, None, _ | _, _, _, None ->
-      None
-  | _, Some a, Some b, Some c ->
-      Some (a, b, c)
-(* ------------------- *)
-
-(** [decode_add chunk] decodes the add instruction:
-    - assign into <a> the sum of <b> and <c> (modulo 32768) *)
-let decode_add chunk : (t * int) option =
-  match get_three_args chunk with
-  | None ->
-      None
-  | Some (a, b, c) ->
-      Some (Add (a, b, c), 4)
-
-(** [decode_eq c] decodes the eq instruction:
-    - set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise. *)
-let decode_eq chunk : (t * int) option =
-  match get_three_args chunk with
-  | None ->
-      None
-  | Some (a, b, c) ->
-      Some (Eq (a, b, c), 4)
-
-(** [decode_set chunk] decodes the SET instruction. It uses 2 parameters
-    of the chunk. It returns Set addr value and the
-    size of the instruction is 3. *)
-let decode_set chunk : (t * int) option =
-  match get_two_args chunk with
-  | None ->
-      None
-  | Some (addr, value) ->
-      Some (Set (addr, value), 3)
-
-(** [decode_jmp chunk] decodes the JMP instruction. It uses 1 parameter
-    of the chunk that is the address. So it returns Jmp addr and the
-    size of the instruction is 2. *)
-let decode_jmp chunk : (t * int) option =
-  match get_one_arg chunk with None -> None | Some addr -> Some (Jmp addr, 2)
-
-(** [decode_jt chunk] decodes the JT instruction. It uses 2 parameters
-    of the chunk that is the condition of the jump and the address.
-    Returns Jt val addr and the size of the instruction is 3. *)
-let decode_jt chunk : (t * int) option =
-  match get_two_args chunk with
-  | None ->
-      None
-  | Some (value, addr) ->
-      Some (Jt (value, addr), 3)
-
-(** [decode_jt chunk] decodes the JT instruction. It uses 2 parameters
-    of the chunk that is the condition of the jump and the address.
-    Returns Jt val addr and the size of the instruction is 3. *)
-let decode_jf chunk : (t * int) option =
-  match get_two_args chunk with
-  | None ->
-      None
-  | Some (value, addr) ->
-      Some (Jf (value, addr), 3)
-
-(** [decode_out chunk] decodes the OUT instruction. It uses 1 parameter
-    of the chunk that is the character to be printed. It returns OUT char
-    and its size is 2. *)
-let decode_out (c : chunk) : (t * int) option =
-  match get_one_arg c with None -> None | Some v -> Some (Out (Char.chr v), 2)
+let take_ops n (ops : int option list) : int list option =
+  let rec aux lst acc i =
+    if i = n then Some (List.rev acc)
+    else
+      match lst with
+      | [] ->
+          None
+      | None :: _ ->
+          None
+      | Some v :: xs ->
+          aux xs (v :: acc) (i + 1)
+  in
+  aux ops [] 0
 
 (** [decode chunk] decodes the instruction based on the first element of the chunk that
     is the opcode. It returns the instruction and its size in memory to be able to
     update the instruction pointer when executing. *)
 let decode (c : chunk) : (t * int) option =
-  let c1, _, _, _ = c in
-  match c1 with
-  | 0x0 ->
+  match c.opcode with
+  | 0 ->
+      (* halt: 0 => stop execution and terminate the program *)
       Some (Halt, 1)
-  | 0x1 ->
-      decode_set c
-  | 0x4 ->
-      decode_eq c
-  | 0x6 ->
-      decode_jmp c
-  | 0x7 ->
-      decode_jt c
-  | 0x8 ->
-      decode_jf c
-  | 0x9 ->
-      decode_add c
-  | 0x13 ->
-      decode_out c
-  | 0x15 ->
+  | 1 -> (
+      (* set: 1 a b => set register <a> to the value of <b> *)
+      let ops_size = 2 in
+      match take_ops ops_size c.ops with
+      | Some [a; b] ->
+          Some (Set (a, b), ops_size + 1)
+      | _ ->
+          None )
+  | 4 -> (
+      (* eq: 4 a b c => set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise *)
+      let ops_size = 3 in
+      match take_ops ops_size c.ops with
+      | Some [a; b; c] ->
+          Some (Eq (a, b, c), ops_size + 1)
+      | _ ->
+          None )
+  | 6 -> (
+      (* jmp: 6 a => jump to <a> *)
+      let ops_size = 1 in
+      match take_ops ops_size c.ops with
+      | Some [a] ->
+          Some (Jmp a, ops_size + 1)
+      | _ ->
+          None )
+  | 7 -> (
+      (* jt: 7 a b *)
+      (* if <a> is nonzero, jump to <b> *)
+      let ops_size = 2 in
+      match take_ops ops_size c.ops with
+      | Some [a; b] ->
+          Some (Jt (a, b), ops_size + 1)
+      | _ ->
+          None )
+  | 8 -> (
+      (* jf: 8 a b *)
+      (* if <a> is zero, jump to <b> *)
+      let ops_size = 2 in
+      match take_ops ops_size c.ops with
+      | Some [a; b] ->
+          Some (Jf (a, b), ops_size + 1)
+      | _ ->
+          None )
+  | 9 -> (
+      (* add: 9 a b c *)
+      (* assign into <a> the sum of <b> and <c> (modulo 32768) *)
+      let ops_size = 3 in
+      match take_ops ops_size c.ops with
+      | Some [a; b; c] ->
+          Some (Add (a, b, c), ops_size + 1)
+      | _ ->
+          None )
+  | 19 -> (
+      (* out: 19 a *)
+      (* write the character represented by ascii code <a> to the terminal *)
+      let ops_size = 1 in
+      match take_ops ops_size c.ops with
+      | Some [a] ->
+          Some (Out (Char.chr a), ops_size + 1)
+      | _ ->
+          None )
+  | 21 ->
+      (* noop: 21 => no operation *)
       Some (Noop, 1)
   | _ ->
-      failwith (Printf.sprintf "Unknown instruction 0x%x" c1)
+      failwith (Printf.sprintf "Unknown instruction 0x%x" c.opcode)
 
 let to_string (insn : t) : string =
   match insn with
