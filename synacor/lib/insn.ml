@@ -30,7 +30,7 @@ let take_ops n (ops : int option list) : int list option =
   in
   aux ops [] 0
 
-(** Use a DSL to describe functions *)
+(** Use a DSL to describe opcodes *)
 type op_spec = {opcode: int; arity: int; build: int list -> t}
 
 let op_specs : op_spec list =
@@ -80,10 +80,9 @@ let op_specs : op_spec list =
     ; arity= 0
     ; build= (fun lst -> match lst with [] -> Noop | _ -> assert false) } ]
 
-(** [decode_with_spec chunk] will go through the list of specification
-    op_specs to find the correct opcode and return the instruction with
-    the size of the instruction. It can be improved by using a HashMap but
-    for our small program it is ok. *)
+(** [decode_with_spec spec chunk] decodes a [chunk] for a given specification [spec].
+    If the specification doesn't match the chunk None is returned, otherwise the instruction
+    and its size (including the opcode) is returned as a tuple. *)
 let decode_with_spec (spec : op_spec) (c : chunk) : (t * int) option =
   if spec.opcode <> c.opcode then None
   else
@@ -93,6 +92,10 @@ let decode_with_spec (spec : op_spec) (c : chunk) : (t * int) option =
     | Some args ->
         Some (spec.build args, spec.arity + 1)
 
+(** [decode chunk] goes through the list of all specifactions and if one applies it
+    returns the result. If none spec matches None is returned. This can be improved
+    using a HashMap but for our tiny emulator it should works without worrying about
+    performances. *)
 let decode (c : chunk) : (t * int) option =
   let rec loop = function
     | [] ->
@@ -102,6 +105,7 @@ let decode (c : chunk) : (t * int) option =
   in
   loop op_specs
 
+(** [to_string insn] converts the instruction [insn] into a string representation *)
 let to_string (insn : t) : string =
   match insn with
   | Add (a, b, c) ->
