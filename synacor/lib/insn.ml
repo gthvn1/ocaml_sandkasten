@@ -1,5 +1,6 @@
 type t =
   | Add of (int * int * int)
+  | Eq of (int * int * int)
   | Halt
   | Jmp of int
   | Jt of (int * int)
@@ -15,60 +16,84 @@ type t =
     of the instruction. *)
 type chunk = int * int option * int option * int option
 
-(** [decode_add c] decodes the add instruction:
-    - assign into <a> the sum of <b> and <c> (modulo 32768) *)
-let decode_add (c : chunk) : (t * int) option =
-  match c with
+(* ----- HELPERS ----- *)
+let get_one_arg chunk : int option =
+  match chunk with _, None, _, _ -> None | _, Some v, _, _ -> Some v
+
+let get_two_args chunk : (int * int) option =
+  match chunk with
+  | _, None, _, _ | _, _, None, _ ->
+      None
+  | _, Some a, Some b, _ ->
+      Some (a, b)
+
+let get_three_args chunk : (int * int * int) option =
+  match chunk with
   | _, None, _, _ | _, _, None, _ | _, _, _, None ->
       None
   | _, Some a, Some b, Some c ->
+      Some (a, b, c)
+(* ------------------- *)
+
+(** [decode_add chunk] decodes the add instruction:
+    - assign into <a> the sum of <b> and <c> (modulo 32768) *)
+let decode_add chunk : (t * int) option =
+  match get_three_args chunk with
+  | None ->
+      None
+  | Some (a, b, c) ->
       Some (Add (a, b, c), 4)
+
+(** [decode_eq c] decodes the eq instruction:
+    - set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise. *)
+let decode_eq chunk : (t * int) option =
+  match get_three_args chunk with
+  | None ->
+      None
+  | Some (a, b, c) ->
+      Some (Eq (a, b, c), 4)
 
 (** [decode_set chunk] decodes the SET instruction. It uses 2 parameters
     of the chunk. It returns Set addr value and the
     size of the instruction is 3. *)
-let decode_set (c : chunk) : (t * int) option =
-  match c with
-  | _, None, _, _ | _, _, None, _ ->
+let decode_set chunk : (t * int) option =
+  match get_two_args chunk with
+  | None ->
       None
-  | _, Some addr, Some value, _ ->
+  | Some (addr, value) ->
       Some (Set (addr, value), 3)
 
 (** [decode_jmp chunk] decodes the JMP instruction. It uses 1 parameter
     of the chunk that is the address. So it returns Jmp addr and the
     size of the instruction is 2. *)
-let decode_jmp (c : chunk) : (t * int) option =
-  match c with _, None, _, _ -> None | _, Some addr, _, _ -> Some (Jmp addr, 2)
+let decode_jmp chunk : (t * int) option =
+  match get_one_arg chunk with None -> None | Some addr -> Some (Jmp addr, 2)
 
 (** [decode_jt chunk] decodes the JT instruction. It uses 2 parameters
     of the chunk that is the condition of the jump and the address.
     Returns Jt val addr and the size of the instruction is 3. *)
-let decode_jt (c : chunk) : (t * int) option =
-  match c with
-  | _, None, _, _ | _, _, None, _ ->
+let decode_jt chunk : (t * int) option =
+  match get_two_args chunk with
+  | None ->
       None
-  | _, Some value, Some addr, _ ->
+  | Some (value, addr) ->
       Some (Jt (value, addr), 3)
 
-(** [decode_jt chunk] decodes the JTinstruction. It uses 2 parameters
+(** [decode_jt chunk] decodes the JT instruction. It uses 2 parameters
     of the chunk that is the condition of the jump and the address.
     Returns Jt val addr and the size of the instruction is 3. *)
-let decode_jf (c : chunk) : (t * int) option =
-  match c with
-  | _, None, _, _ | _, _, None, _ ->
+let decode_jf chunk : (t * int) option =
+  match get_two_args chunk with
+  | None ->
       None
-  | _, Some value, Some addr, _ ->
+  | Some (value, addr) ->
       Some (Jf (value, addr), 3)
 
 (** [decode_out chunk] decodes the OUT instruction. It uses 1 parameter
     of the chunk that is the character to be printed. It returns OUT char
     and its size is 2. *)
 let decode_out (c : chunk) : (t * int) option =
-  match c with
-  | _, None, _, _ ->
-      None
-  | _, Some v, _, _ ->
-      Some (Out (Char.chr v), 2)
+  match get_one_arg c with None -> None | Some v -> Some (Out (Char.chr v), 2)
 
 (** [decode chunk] decodes the instruction based on the first element of the chunk that
     is the opcode. It returns the instruction and its size in memory to be able to
@@ -80,6 +105,8 @@ let decode (c : chunk) : (t * int) option =
       Some (Halt, 1)
   | 0x1 ->
       decode_set c
+  | 0x4 ->
+      decode_eq c
   | 0x6 ->
       decode_jmp c
   | 0x7 ->
@@ -99,6 +126,8 @@ let to_string (insn : t) : string =
   match insn with
   | Add (a, b, c) ->
       Printf.sprintf "ADD 0x%x 0x%x 0x%x" a b c
+  | Eq (a, b, c) ->
+      Printf.sprintf "EQ 0x%x 0x%x 0x%x" a b c
   | Halt ->
       "HALT"
   | Jmp addr ->
