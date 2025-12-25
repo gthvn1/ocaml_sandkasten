@@ -10,16 +10,20 @@ type vm =
   ; mode: mode }
 
 let read_mem_opt (mem : Memory.t) (addr : int) : int option =
-  try Some (Memory.read mem ~addr) with _ -> None
+  try Some (Memory.read mem ~addr)
+  with Failure msg ->
+    Printf.printf "Warning: failed to read memory at 0x%x: %s" addr msg ;
+    None
 
-(** [decode vm] returns the four word (chunk) under IP that is the
+(** [decode vm] returns four words (chunk) under IP that is the
     maximum size of an instruction. If only one word remains the last
-    three can be None. If there is no word we are out or memory and
+    three can be None. If there is no word we are out of memory and
     an error is raised. *)
 let fetch vm : Insn.chunk * vm =
   match read_mem_opt vm.mem vm.ip with
   | None ->
-      failwith (Printf.sprintf "Out of memory: trying access Mem[0x%x]" vm.ip)
+      failwith
+        (Printf.sprintf "Out of memory: trying to access Mem[0x%x]" vm.ip)
   | Some v ->
       ( ( v
         , read_mem_opt vm.mem (vm.ip + 1)
@@ -38,7 +42,7 @@ let decode (fetch_step : Insn.chunk * vm) : Insn.t * vm =
 
 let disassemble (decode_step : Insn.t * vm) : vm =
   let insn, vm = decode_step in
-  Printf.printf "%04d| %s\n" vm.ip (Insn.to_string insn) ;
+  Printf.printf "%05x| %s\n" vm.ip (Insn.to_string insn) ;
   vm
 
 let execute (decode_step : Insn.t * vm) : vm =

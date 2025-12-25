@@ -60,10 +60,9 @@ let decode_out (c : chunk) : (t * int) option =
   | _, Some v, _, _ ->
       Some (Out (Char.chr v), 2)
 
-(** [decode chunk] decodes the instruction base on the first element of the chunk that
-    is the opcode. It return the instruction and its size in memory to be able to
-    update the instruction pointer when executing. The chunk is the piece of memory
-    fetched. *)
+(** [decode chunk] decodes the instruction based on the first element of the chunk that
+    is the opcode. It returns the instruction and its size in memory to be able to
+    update the instruction pointer when executing. *)
 let decode (c : chunk) : (t * int) option =
   let c1, _, _, _ = c in
   match c1 with
