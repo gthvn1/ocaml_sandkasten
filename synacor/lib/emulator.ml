@@ -47,6 +47,8 @@ let disassemble (decode_step : Insn.t * vm) : vm =
 
 let execute (decode_step : Insn.t * vm) : vm =
   match decode_step with
+  | Add (_a, _b, _c), _vm ->
+      failwith "Execute add"
   | Halt, vm ->
       {vm with state= Halted}
   | Jmp addr, vm ->

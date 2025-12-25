@@ -1,4 +1,5 @@
 type t =
+  | Add of (int * int * int)
   | Halt
   | Jmp of int
   | Jt of (int * int)
@@ -13,6 +14,15 @@ type t =
     is required. Others are optional and their usage depends on the kind
     of the instruction. *)
 type chunk = int * int option * int option * int option
+
+(** [decode_add c] decodes the add instruction:
+    - assign into <a> the sum of <b> and <c> (modulo 32768) *)
+let decode_add (c : chunk) : (t * int) option =
+  match c with
+  | _, None, _, _ | _, _, None, _ | _, _, _, None ->
+      None
+  | _, Some a, Some b, Some c ->
+      Some (Add (a, b, c), 4)
 
 (** [decode_set chunk] decodes the SET instruction. It uses 2 parameters
     of the chunk. It returns Set addr value and the
@@ -76,6 +86,8 @@ let decode (c : chunk) : (t * int) option =
       decode_jt c
   | 0x8 ->
       decode_jf c
+  | 0x9 ->
+      decode_add c
   | 0x13 ->
       decode_out c
   | 0x15 ->
@@ -85,6 +97,8 @@ let decode (c : chunk) : (t * int) option =
 
 let to_string (insn : t) : string =
   match insn with
+  | Add (a, b, c) ->
+      Printf.sprintf "ADD 0x%x 0x%x 0x%x" a b c
   | Halt ->
       "HALT"
   | Jmp addr ->
