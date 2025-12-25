@@ -30,79 +30,77 @@ let take_ops n (ops : int option list) : int list option =
   in
   aux ops [] 0
 
-(** [decode chunk] decodes the instruction based on the first element of the chunk that
-    is the opcode. It returns the instruction and its size in memory to be able to
-    update the instruction pointer when executing. *)
+(** Use a DSL to describe functions *)
+type op_spec = {opcode: int; arity: int; build: int list -> t}
+
+let op_specs : op_spec list =
+  [ (* halt: 0, stop execution and terminate the program *)
+    { opcode= 0
+    ; arity= 0
+    ; build= (fun lst -> match lst with [] -> Halt | _ -> assert false) }
+  ; (* set: 1 a b,  set register <a> to the value of <b> *)
+    { opcode= 1
+    ; arity= 2
+    ; build=
+        (fun lst -> match lst with [a; b] -> Set (a, b) | _ -> assert false) }
+  ; (* eq: 4 a b c,  set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise *)
+    { opcode= 4
+    ; arity= 3
+    ; build=
+        (fun lst ->
+          match lst with [a; b; c] -> Eq (a, b, c) | _ -> assert false ) }
+  ; (* jmp: 6 a, jump to <a> *)
+    { opcode= 6
+    ; arity= 1
+    ; build= (fun lst -> match lst with [a] -> Jmp a | _ -> assert false) }
+  ; (* jt: 7 a b,  if <a> is nonzero, jump to <b> *)
+    { opcode= 7
+    ; arity= 2
+    ; build=
+        (fun lst -> match lst with [a; b] -> Jt (a, b) | _ -> assert false) }
+  ; (* jf: 8 a b,  if <a> is zero, jump to <b> *)
+    { opcode= 8
+    ; arity= 2
+    ; build=
+        (fun lst -> match lst with [a; b] -> Jf (a, b) | _ -> assert false) }
+  ; (* add: 9 a b c,  assign into <a> the sum of <b> and <c> (modulo 32768) *)
+    { opcode= 9
+    ; arity= 3
+    ; build=
+        (fun lst ->
+          match lst with [a; b; c] -> Add (a, b, c) | _ -> assert false ) }
+  ; (* out: 19 a,  write the character represented by ascii code <a> to the terminal *)
+    { opcode= 19
+    ; arity= 1
+    ; build=
+        (fun lst -> match lst with [a] -> Out (Char.chr a) | _ -> assert false)
+    }
+  ; (* noop: 21,  no operation *)
+    { opcode= 21
+    ; arity= 0
+    ; build= (fun lst -> match lst with [] -> Noop | _ -> assert false) } ]
+
+(** [decode_with_spec chunk] will go through the list of specification
+    op_specs to find the correct opcode and return the instruction with
+    the size of the instruction. It can be improved by using a HashMap but
+    for our small program it is ok. *)
+let decode_with_spec (spec : op_spec) (c : chunk) : (t * int) option =
+  if spec.opcode <> c.opcode then None
+  else
+    match take_ops spec.arity c.ops with
+    | None ->
+        None
+    | Some args ->
+        Some (spec.build args, spec.arity + 1)
+
 let decode (c : chunk) : (t * int) option =
-  match c.opcode with
-  | 0 ->
-      (* halt: 0 => stop execution and terminate the program *)
-      Some (Halt, 1)
-  | 1 -> (
-      (* set: 1 a b => set register <a> to the value of <b> *)
-      let ops_size = 2 in
-      match take_ops ops_size c.ops with
-      | Some [a; b] ->
-          Some (Set (a, b), ops_size + 1)
-      | _ ->
-          None )
-  | 4 -> (
-      (* eq: 4 a b c => set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise *)
-      let ops_size = 3 in
-      match take_ops ops_size c.ops with
-      | Some [a; b; c] ->
-          Some (Eq (a, b, c), ops_size + 1)
-      | _ ->
-          None )
-  | 6 -> (
-      (* jmp: 6 a => jump to <a> *)
-      let ops_size = 1 in
-      match take_ops ops_size c.ops with
-      | Some [a] ->
-          Some (Jmp a, ops_size + 1)
-      | _ ->
-          None )
-  | 7 -> (
-      (* jt: 7 a b *)
-      (* if <a> is nonzero, jump to <b> *)
-      let ops_size = 2 in
-      match take_ops ops_size c.ops with
-      | Some [a; b] ->
-          Some (Jt (a, b), ops_size + 1)
-      | _ ->
-          None )
-  | 8 -> (
-      (* jf: 8 a b *)
-      (* if <a> is zero, jump to <b> *)
-      let ops_size = 2 in
-      match take_ops ops_size c.ops with
-      | Some [a; b] ->
-          Some (Jf (a, b), ops_size + 1)
-      | _ ->
-          None )
-  | 9 -> (
-      (* add: 9 a b c *)
-      (* assign into <a> the sum of <b> and <c> (modulo 32768) *)
-      let ops_size = 3 in
-      match take_ops ops_size c.ops with
-      | Some [a; b; c] ->
-          Some (Add (a, b, c), ops_size + 1)
-      | _ ->
-          None )
-  | 19 -> (
-      (* out: 19 a *)
-      (* write the character represented by ascii code <a> to the terminal *)
-      let ops_size = 1 in
-      match take_ops ops_size c.ops with
-      | Some [a] ->
-          Some (Out (Char.chr a), ops_size + 1)
-      | _ ->
-          None )
-  | 21 ->
-      (* noop: 21 => no operation *)
-      Some (Noop, 1)
-  | _ ->
-      failwith (Printf.sprintf "Unknown instruction 0x%x" c.opcode)
+  let rec loop = function
+    | [] ->
+        None
+    | s :: xs -> (
+      match decode_with_spec s c with None -> loop xs | Some _ as r -> r )
+  in
+  loop op_specs
 
 let to_string (insn : t) : string =
   match insn with
