@@ -20,8 +20,8 @@
 
 (package
  (name xapi_db)
- (synopsis "Parse xapi db and generate a static HTML to explore it")
- (depends xmlm js_of_ocaml))
+ (synopsis "Parse xapi db, generate relational DB in memory and provides a CLI")
+ (depends xmlm))
 
 (package
  (name aoc2025)
