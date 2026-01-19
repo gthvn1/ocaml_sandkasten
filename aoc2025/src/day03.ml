@@ -13,10 +13,8 @@ let string_to_ints s : int list =
   *)
 let find_x (lst : int list) (value : int) : int option * int list =
   let rec aux = function
-    | [] ->
-        (None, [])
-    | x :: xs ->
-        if x = value then (Some x, xs) else aux xs
+    | [] -> (None, [])
+    | x :: xs -> if x = value then (Some x, xs) else aux xs
   in
   aux lst
 
@@ -28,26 +26,22 @@ let find_x (lst : int list) (value : int) : int option * int list =
     In 818181911112111, => 92
 *)
 let find_largest (lst : int list) : int =
-  if List.length lst < 2 then failwith "At least two items are expected" ;
+  if List.length lst < 2 then failwith "At least two items are expected";
   let rec aux idx a_opt b_opt l =
-    if idx < 0 then failwith "cannot be reached be keep it to catch bug" ;
+    if idx < 0 then failwith "cannot be reached be keep it to catch bug";
     match find_x l idx with
-    | None, _ ->
-        aux (idx - 1) a_opt b_opt l
+    | None, _ -> aux (idx - 1) a_opt b_opt l
     | Some v, rest -> (
-      match (a_opt, b_opt) with
-      | None, None ->
-          (* Be carfull if the highest is the last one of the list, we cannot
+        match (a_opt, b_opt) with
+        | None, None ->
+            (* Be carfull if the highest is the last one of the list, we cannot
            build largest but as it is the bigger number keep it as the second
            number. *)
-          if List.length rest = 0 then aux (idx - 1) None (Some v) l
-          else aux idx (Some v) None rest
-      | None, Some b ->
-          (10 * v) + b
-      | Some a, None ->
-          (10 * a) + v
-      | _ ->
-          failwith "unreachable" )
+            if List.length rest = 0 then aux (idx - 1) None (Some v) l
+            else aux idx (Some v) None rest
+        | None, Some b -> (10 * v) + b
+        | Some a, None -> (10 * a) + v
+        | _ -> failwith "unreachable")
   in
   aux 9 None None lst
 
@@ -64,17 +58,14 @@ type pos = int * int
 let string_to_tuple (s : string) : pos list =
   let l = string_to_ints s in
   let rec aux acc idx = function
-    | [] ->
-        List.rev acc
-    | x :: xs ->
-        aux ((idx, x) :: acc) (idx + 1) xs
+    | [] -> List.rev acc
+    | x :: xs -> aux ((idx, x) :: acc) (idx + 1) xs
   in
   aux [] 0 l
 
 let filter_tuple (value : int) (l : pos list) : pos list * pos list =
   let rec aux acc1 acc2 = function
-    | [] ->
-        (List.rev acc1, List.rev acc2)
+    | [] -> (List.rev acc1, List.rev acc2)
     | ((_, x) as t) :: xs ->
         if x = value then aux acc1 (t :: acc2) xs else aux (t :: acc1) acc2 xs
   in

@@ -1,5 +1,6 @@
 let map =
-  [ "..@@.@@@@."
+  [
+    "..@@.@@@@."
   ; "@@@.@.@.@@"
   ; "@@@@@.@.@@"
   ; "@.@@@@..@."
@@ -8,7 +9,8 @@ let map =
   ; ".@.@.@.@@@"
   ; "@.@@@.@@@@"
   ; ".@@@@@@@@."
-  ; "@.@.@@@.@." ]
+  ; "@.@.@@@.@."
+  ]
   |> List.map (fun s -> String.to_seq s |> List.of_seq)
 
 let arr = Array.of_list (List.map Array.of_list map)
@@ -20,16 +22,18 @@ let get_neigh ~(row : int) ~(col : int) arr : char list =
       try
         let n = arr.(x).(y) in
         n :: acc
-      with _ -> acc )
+      with _ -> acc)
     []
-    [ (row - 1, col - 1)
+    [
+      (row - 1, col - 1)
     ; (row - 1, col)
     ; (row - 1, col + 1)
     ; (row, col - 1)
     ; (row, col + 1)
     ; (row + 1, col - 1)
     ; (row + 1, col)
-    ; (row + 1, col + 1) ]
+    ; (row + 1, col + 1)
+    ]
 
 let get_neigh_is_rolls ~row ~col arr =
   get_neigh ~row ~col arr |> List.filter (fun c -> c = '@')
@@ -43,7 +47,7 @@ let access_forklift a : int =
       if a.(r).(c) = '@' && List.length (get_neigh_is_rolls ~row:r ~col:c a) < 4
       then v := !v + 1
     done
-  done ;
+  done;
   !v
 
 module D4 = Utils.Openday (struct

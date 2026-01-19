@@ -2,7 +2,7 @@ let () =
   let prog_filename =
     try Sys.argv.(1)
     with _ ->
-      prerr_endline "USAGE: synacor <rom>" ;
+      prerr_endline "USAGE: synacor <rom>";
       exit 1
   in
   let ic = open_in prog_filename in

@@ -6,10 +6,8 @@
 let split_string (s : string) (chunk_size : int) : string list =
   let rec aux acc str =
     match String.length str with
-    | 0 ->
-        List.rev acc
-    | x when x = chunk_size ->
-        List.rev (str :: acc)
+    | 0 -> List.rev acc
+    | x when x = chunk_size -> List.rev (str :: acc)
     | x ->
         aux
           (String.sub str 0 chunk_size :: acc)
@@ -70,7 +68,7 @@ let repeated_int x = string_of_int x |> repeated
 (* transform a string "XX-YY" into a tuple int * int *)
 let get_range (s : string) : int * int =
   let l = String.split_on_char '-' s in
-  if List.length l <> 2 then failwith "Two items are expected in range" ;
+  if List.length l <> 2 then failwith "Two items are expected in range";
   (List.hd l |> int_of_string, List.tl l |> List.hd |> int_of_string)
 
 (* Returns the number of repeated int in a given range *)

@@ -19,8 +19,8 @@ let load (rom : bytes) : t =
 let read (mem : t) ~(addr : int) : int option =
   try Some (Array.get mem addr) with _ -> None
 
-(** [to_str mem] return a string that is memory around the current
-    instruction pointer. It is used for debugging. *)
+(** [to_str mem] return a string that is memory around the current instruction
+    pointer. It is used for debugging. *)
 let to_str ~(mem : t) ~(pos : int) : string =
   let mem_size = Array.length mem in
   if mem_size = 0 then "Empty mem"
@@ -35,5 +35,5 @@ let to_str ~(mem : t) ~(pos : int) : string =
         else Printf.sprintf "   Mem[%03d]:0x%04X\n" i (Array.get mem i)
       in
       output := !output ^ mem_str
-    done ;
+    done;
     !output

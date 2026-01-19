@@ -1,7 +1,6 @@
 let rec is_prime' (l : int list) (n : int) : bool =
   match l with
-  | [] ->
-      true
+  | [] -> true
   | x :: xs ->
       if n = x then true
       else if n mod x = 0 then false

@@ -5,12 +5,9 @@ let get_rotation (s : string) : (dir * int) option =
     let dir_str = String.sub s 0 1 in
     let steps = String.sub s 1 (String.length s - 1) |> int_of_string in
     match dir_str with
-    | "l" | "L" ->
-        Some (Left, steps)
-    | "r" | "R" ->
-        Some (Right, steps)
-    | _ ->
-        None
+    | "l" | "L" -> Some (Left, steps)
+    | "r" | "R" -> Some (Right, steps)
+    | _ -> None
   with _ -> None
 
 let normalize (x : int) : int * int = (x / 100, x mod 100)
@@ -21,8 +18,7 @@ let normalize (x : int) : int * int = (x / 100, x mod 100)
    The last value is the number of times to hit 0. *)
 let rotate1 (value : int) (rotation : string) : int * int =
   match get_rotation rotation with
-  | None ->
-      failwith "Unable to get the rotation"
+  | None -> failwith "Unable to get the rotation"
   | Some (d, x) -> (
       (* normalize x *)
       let x' = x mod 100 in
@@ -32,13 +28,12 @@ let rotate1 (value : int) (rotation : string) : int * int =
           (v', if v' = 0 then 1 else 0)
       | Right ->
           let v' = (value + x') mod 100 in
-          (v', if v' = 0 then 1 else 0) )
+          (v', if v' = 0 then 1 else 0))
 
 let rotate2 (value : int) (rotation : string) : int * int =
   (* Printf.printf "\npos is %d \n" value ; *)
   match get_rotation rotation with
-  | None ->
-      failwith "Unable to get the rotation"
+  | None -> failwith "Unable to get the rotation"
   | Some (d, x) -> (
       (* normalize x *)
       let n, x' = normalize x in
@@ -52,10 +47,10 @@ let rotate2 (value : int) (rotation : string) : int * int =
           let wrap = if value <> 0 && value + x' >= 100 then 1 else 0 in
           let v' = (value + x') mod 100 in
           (* Printf.printf "Right rotate to %d, n %d, wrapped %d\n" v' n wrap ; *)
-          (v', n + wrap) )
+          (v', n + wrap))
 
 let rotations_sample =
-  ["L68"; "L30"; "R48"; "L5"; "R60"; "L55"; "L1"; "L99"; "R14"; "L82"]
+  [ "L68"; "L30"; "R48"; "L5"; "R60"; "L55"; "L1"; "L99"; "R14"; "L82" ]
 
 module Day1 = struct
   let filename = "aoc2025/files/day01.txt"
@@ -69,7 +64,7 @@ let part1 () =
     List.fold_left
       (fun (pos, hits) str ->
         let new_pos, h = rotate1 pos str in
-        (new_pos, h + hits) )
+        (new_pos, h + hits))
       (50, 0) rotations
   in
   Printf.printf "reached %d and hits 0 %d times\n" final_pos total_hits
@@ -80,7 +75,7 @@ let part2 () =
     List.fold_left
       (fun (pos, hits) str ->
         let new_pos, h = rotate2 pos str in
-        (new_pos, h + hits) )
+        (new_pos, h + hits))
       (50, 0) rotations
   in
   Printf.printf "reached %d and hits 0 %d times\n" final_pos total_hits
