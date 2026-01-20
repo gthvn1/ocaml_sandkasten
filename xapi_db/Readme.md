@@ -1,3 +1,9 @@
+⚠️ NO MORE DEV FOR THIS IN THIS REPO ⚠️
+
+IT HAS IT'S OWN REPO NOW: https://github.com/gthvn1/xapidb_in_shell
+
+---
+
 ## Description
 
 This tool parses a XAPI database XML file, builds an in-memory relational database,
