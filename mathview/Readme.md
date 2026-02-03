@@ -1,0 +1,1 @@
+- run `dune exec mathview`

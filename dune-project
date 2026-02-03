@@ -15,6 +15,11 @@
 (bug_reports "https://github.com/gthvn1/ocaml_sandkasten/issues")
 
 (package
+  (name mathview)
+  (synopsis "Draw function and we will see")
+  (depends graphics))
+
+(package
  (name synacor)
  (synopsis "Synacor challenge"))
 

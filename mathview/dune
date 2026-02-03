@@ -1,0 +1,5 @@
+(executable
+ (public_name mathview)
+ (name main)
+ (package mathview)
+ (libraries graphics))
