@@ -110,12 +110,12 @@ let () =
       (Printf.sprintf "(%.2f,%.2f) -> (%.2f, %.2f)" x_min y_min x_max y_max);
 
     (* Draw a circle at the mouse x-position on the function graph *)
-    let px, _ = from_screen (s.mouse_x, s.mouse_y) ~view in
-    let py = sin px in
+    let mx, _ = from_screen (s.mouse_x, s.mouse_y) ~view in
+    let my = sin mx in
     moveto 10 70;
-    draw_string (Printf.sprintf "Red dot position (%.2f,%.2f)" px py);
+    draw_string (Printf.sprintf "Red dot position (%.2f,%.2f)" mx my);
 
-    let sx, sy = to_screen (px, py) ~view in
+    let sx, sy = to_screen (mx, my) ~view in
     set_color red;
     fill_circle sx sy 3;
 
