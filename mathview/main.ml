@@ -1,10 +1,12 @@
 type mpoint = float * float
-(** mpoint is a mathematical point *)
+(** Mathematical point [(x, y)] in Cartesian coordinates. *)
 
 type spoint = int * int
-(** spoint is a point on the screen *)
+(** Pixel coordinates [(x, y)] in screen space. *)
 
 type view = { scale : float; width : float; height : float }
+(** Current viewport settings: [scale] in pixels per math unit and
+    [width]/[height] in pixels. *)
 
 (* Some helpers *)
 
@@ -20,6 +22,9 @@ let to_screen (x, y) ~view : spoint =
   let py = (y *. view.scale) +. (view.height /. 2.) in
   (int_of_float px, int_of_float py)
 
+(** [from_screen (x, y)] converts screen coordinates [(x, y)] with origin at the
+    bottom-left into mathematical coordinates whose origin is the center of the
+    screen. *)
 let from_screen (x, y) ~view : mpoint =
   let x = float_of_int x and y = float_of_int y in
   let px = (x -. (view.width /. 2.)) /. view.scale in
@@ -29,13 +34,15 @@ let from_screen (x, y) ~view : mpoint =
 let draw_axes () =
   let open Graphics in
   set_color black;
-  (* Draw x axe *)
+  (* Draw x-axis *)
   moveto 0 (win_height () / 2);
   lineto (win_width ()) (win_height () / 2);
-  (* Draw y axe *)
+  (* Draw y-axis *)
   moveto (win_width () / 2) 0;
   lineto (win_width () / 2) (win_height ())
 
+(** [draw_fun f ~first ~last ~color ~view ~step] draws the graph of [f] on the
+    interval [[first, last]] using step size [step] in mathematical units. *)
 let draw_fun f ~first ~last ~color ~view ~step =
   let open Graphics in
   set_color color;
@@ -58,6 +65,7 @@ type state = {
   ; mouse_y : int
   ; scale : float
 }
+(** UI state carried across iterations of the event loop. *)
 
 let () =
   let open Graphics in
@@ -101,7 +109,7 @@ let () =
     draw_string
       (Printf.sprintf "(%.2f,%.2f) -> (%.2f, %.2f)" x_min y_min x_max y_max);
 
-    (* Draw a circle to the corresponding to the mouse_x position and the function applied to it *)
+    (* Draw a circle at the mouse x-position on the function graph *)
     let px, _ = from_screen (s.mouse_x, s.mouse_y) ~view in
     let py = sin px in
     moveto 10 70;
