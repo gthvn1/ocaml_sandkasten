@@ -112,23 +112,52 @@ let () =
     let () =
       match s.x0 with
       | Some sx ->
-          let mx, _ = from_screen (sx, 0) ~view in
-          let my = sin mx in
-          moveto 10 70;
-          draw_string (Printf.sprintf "x0 (%.2f,%.2f)" mx my);
-          let sx, sy = to_screen (mx, my) ~view in
+          let mx0, _ = from_screen (sx, 0) ~view in
+          let my0 = sin mx0 in
+
+          let sx0, sy0 = to_screen (mx0, my0) ~view in
           set_color blue;
-          fill_circle sx sy 3
+          fill_circle sx0 sy0 3;
+
+          (* compute the slope *)
+          let mx1, _ = from_screen s.mouse_pos ~view in
+          let my1 = sin mx1 in
+
+          (* avoid division by zero *)
+          if abs_float (mx1 -. mx0) > 1e-6 then (
+            let a = (my1 -. my0) /. (mx1 -. mx0) in
+            let b = my0 -. (a *. mx0) in
+
+            (* display equation *)
+            moveto 10 70;
+            draw_string (Printf.sprintf "f(x) = %.3f x + %.3f" a b);
+
+            (* draw the line *)
+            let x_min, _ = from_screen (0, 0) ~view in
+            let x_max, _ = from_screen (current_width, 0) ~view in
+
+            let y_min = (a *. x_min) +. b in
+            let y_max = (a *. x_max) +. b in
+
+            let sx1, sy1 = to_screen (x_min, y_min) ~view in
+            let sx2, sy2 = to_screen (x_max, y_max) ~view in
+
+            set_color blue;
+            moveto sx1 sy1;
+            lineto sx2 sy2);
+
+          set_color black;
+          moveto 10 90;
+          draw_string (Printf.sprintf "x0 (%.2f,%.2f)" mx0 my0)
       | None ->
-          moveto 10 70;
+          moveto 10 90;
           draw_string (Printf.sprintf "x0")
     in
 
     (* Draw a circle at the mouse x-position on the function graph *)
     let mx, _ = from_screen s.mouse_pos ~view in
     let my = sin mx in
-    set_color black;
-    moveto 10 90;
+    moveto 10 110;
     draw_string (Printf.sprintf "Red dot position (%.2f,%.2f)" mx my);
 
     let sx, sy = to_screen (mx, my) ~view in
