@@ -1,18 +1,21 @@
+let win_width () = Graphics.size_x () - 1
+let win_height () = Graphics.size_y () - 1
+
 (** [to_screen (x, y)] converts mathematical coordinates [(x, y)] into screen
     coordinates. In screen coordinates, the origin [(0, 0)] is at the
     bottom-left corner of the screen, whereas in mathematical coordinates the
     origin is at the center of the screen. *)
 let to_screen (x, y) ~scale : int * int =
-  let width = float_of_int @@ Graphics.size_x () in
-  let height = float_of_int @@ Graphics.size_y () in
+  let width = float_of_int @@ win_width () in
+  let height = float_of_int @@ win_height () in
   let px = (x *. scale) +. (width /. 2.) in
   let py = (y *. scale) +. (height /. 2.) in
   (int_of_float px, int_of_float py)
 
 let from_screen (x, y) ~scale : float * float =
   let x = float_of_int x and y = float_of_int y in
-  let width = float_of_int @@ Graphics.size_x () in
-  let height = float_of_int @@ Graphics.size_y () in
+  let width = float_of_int @@ win_width () in
+  let height = float_of_int @@ win_height () in
   let px = (x -. (width /. 2.)) /. scale in
   let py = (y -. (height /. 2.)) /. scale in
   (px, py)
@@ -21,11 +24,11 @@ let draw_axes () =
   let open Graphics in
   set_color black;
   (* Draw x axe *)
-  moveto 0 (size_y () / 2);
-  lineto (size_x ()) (size_y () / 2);
+  moveto 0 (win_height () / 2);
+  lineto (win_width ()) (win_height () / 2);
   (* Draw y axe *)
-  moveto (size_x () / 2) 0;
-  lineto (size_x () / 2) (size_y ())
+  moveto (win_width () / 2) 0;
+  lineto (win_width () / 2) (win_height ())
 
 let draw_fun f ~first ~last ~color ~scale =
   let open Graphics in
@@ -62,7 +65,7 @@ let () =
     draw_axes ();
 
     (* draw some function *)
-    let first, last = from_screen (0, size_x ()) ~scale:s.scale in
+    let first, last = from_screen (0, win_width ()) ~scale:s.scale in
     draw_fun sin ~first ~last ~color:green ~scale:s.scale;
 
     (*
