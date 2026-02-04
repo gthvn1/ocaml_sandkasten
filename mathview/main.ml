@@ -58,6 +58,7 @@ type state = {
 let () =
   let open Graphics in
   open_graph "";
+  auto_synchronize false;
 
   let rec loop s =
     clear_graph ();
