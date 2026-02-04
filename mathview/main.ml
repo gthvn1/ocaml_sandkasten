@@ -115,7 +115,7 @@ let () =
       | 'q' -> ()
       | '+' -> loop { s with last_pressed = '+'; scale = s.scale +. 1.0 }
       | '-' ->
-          loop { s with last_pressed = '-'; scale = max (s.scale -. 1.0) 0. }
+          loop { s with last_pressed = '-'; scale = max (s.scale -. 1.0) 1. }
       | c ->
           loop
             {
