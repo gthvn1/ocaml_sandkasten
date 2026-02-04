@@ -89,27 +89,27 @@ let () =
     moveto 10 10;
     draw_string (Printf.sprintf "Last key pressed %c" s.last_pressed);
 
-    (* display the mouse position *)
-    let px, py = from_screen (s.mouse_x, s.mouse_y) ~view in
-    moveto 10 30;
-    draw_string (Printf.sprintf "Mouse position (%.2f,%.2f)" px py);
-
     (* display the scale *)
-    moveto 10 50;
+    moveto 10 30;
     draw_string (Printf.sprintf "Scale %.2f" s.scale);
 
     (* display area info *)
     set_color blue;
-    moveto 10 70;
+    moveto 10 50;
     let x_min, y_min = from_screen ~view (0, 0) in
     let x_max, y_max = from_screen ~view (current_width, current_height) in
     draw_string
       (Printf.sprintf "(%.2f,%.2f) -> (%.2f, %.2f)" x_min y_min x_max y_max);
 
-    (* Draw a circle to the corresponding y value of px *)
-    let m_x, m_y = to_screen (px, sin px) ~view in
+    (* Draw a circle to the corresponding to the mouse_x position and the function applied to it *)
+    let px, _ = from_screen (s.mouse_x, s.mouse_y) ~view in
+    let py = sin px in
+    moveto 10 70;
+    draw_string (Printf.sprintf "Red dot position (%.2f,%.2f)" px py);
+
+    let sx, sy = to_screen (px, py) ~view in
     set_color red;
-    fill_circle m_x m_y 3;
+    fill_circle sx sy 3;
 
     (* synchronize and wait for next event *)
     synchronize ();
