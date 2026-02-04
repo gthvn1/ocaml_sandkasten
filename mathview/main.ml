@@ -61,9 +61,9 @@ let draw_fun f ~first ~last ~color ~view ~step =
 
 type state = {
     last_pressed : char
-  ; mouse_x : int
-  ; mouse_y : int
   ; scale : float
+  ; mouse_pos : spoint
+  ; x0 : int option
 }
 (** UI state carried across iterations of the event loop. *)
 
@@ -102,17 +102,33 @@ let () =
     draw_string (Printf.sprintf "Scale %.2f" s.scale);
 
     (* display area info *)
-    set_color blue;
     moveto 10 50;
     let x_min, y_min = from_screen ~view (0, 0) in
     let x_max, y_max = from_screen ~view (current_width, current_height) in
     draw_string
       (Printf.sprintf "(%.2f,%.2f) -> (%.2f, %.2f)" x_min y_min x_max y_max);
 
+    (* display x0 if set and add it on the function graph *)
+    let () =
+      match s.x0 with
+      | Some sx ->
+          let mx, _ = from_screen (sx, 0) ~view in
+          let my = sin mx in
+          moveto 10 70;
+          draw_string (Printf.sprintf "x0 (%.2f,%.2f)" mx my);
+          let sx, sy = to_screen (mx, my) ~view in
+          set_color blue;
+          fill_circle sx sy 3
+      | None ->
+          moveto 10 70;
+          draw_string (Printf.sprintf "x0")
+    in
+
     (* Draw a circle at the mouse x-position on the function graph *)
-    let mx, _ = from_screen (s.mouse_x, s.mouse_y) ~view in
+    let mx, _ = from_screen s.mouse_pos ~view in
     let my = sin mx in
-    moveto 10 70;
+    set_color black;
+    moveto 10 90;
     draw_string (Printf.sprintf "Red dot position (%.2f,%.2f)" mx my);
 
     let sx, sy = to_screen (mx, my) ~view in
@@ -122,7 +138,7 @@ let () =
     (* synchronize and wait for next event *)
     synchronize ();
 
-    let status = wait_next_event [ Key_pressed; Mouse_motion ] in
+    let status = wait_next_event [ Key_pressed; Mouse_motion; Button_down ] in
     if status.keypressed then
       match status.key with
       | 'q' -> ()
@@ -134,10 +150,13 @@ let () =
             {
               s with
               last_pressed = c
-            ; mouse_x = status.mouse_x
-            ; mouse_y = status.mouse_y
+            ; mouse_pos = (status.mouse_x, status.mouse_y)
             }
-    else loop { s with mouse_x = status.mouse_x; mouse_y = status.mouse_y }
+    else if status.button then
+      match s.x0 with
+      | Some _ -> loop { s with x0 = None }
+      | None -> loop { s with x0 = Some status.mouse_x }
+    else loop { s with mouse_pos = (status.mouse_x, status.mouse_y) }
   in
-  loop { last_pressed = ' '; mouse_x = 0; mouse_y = 0; scale = 50.0 };
+  loop { last_pressed = ' '; scale = 50.0; mouse_pos = (0, 0); x0 = None };
   close_graph ()
