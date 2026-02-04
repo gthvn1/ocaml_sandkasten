@@ -106,6 +106,11 @@ let () =
     draw_string
       (Printf.sprintf "(%.2f,%.2f) -> (%.2f, %.2f)" x_min y_min x_max y_max);
 
+    (* Draw a circle to the corresponding y value of px *)
+    let m_x, m_y = to_screen (px, sin px) ~view in
+    set_color red;
+    fill_circle m_x m_y 3;
+
     (* synchronize and wait for next event *)
     synchronize ();
 
