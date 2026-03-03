@@ -1,0 +1,11 @@
+(library
+ (name day4)
+ (modules day4))
+
+(library
+ (name day6)
+ (modules day6))
+
+(library
+ (name day14)
+ (modules day14))

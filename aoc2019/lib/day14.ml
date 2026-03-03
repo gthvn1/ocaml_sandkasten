@@ -1,0 +1,83 @@
+(*
+   What we want is a map where for a given output chemical we can
+   get the input chemical.
+   For example
+     - "9 ORE => 2 A" should produce reaction["2 A"] -> "9 ORE"
+     - "4 C, 1 A => 1 CA" -> reaction["1 CA"] -> ["4 C"; "1 A"]
+
+   But instead of using string we can use chemical type.
+*)
+
+let sample_input =
+  [
+    "9 ORE => 2 A"
+  ; "8 ORE => 3 B"
+  ; "7 ORE => 5 C"
+  ; "3 A, 4 B => 1 AB"
+  ; "5 B, 7 C => 1 BC"
+  ; "4 C, 1 A => 1 CA"
+  ; "2 AB, 3 BC, 4 CA => 1 FUEL"
+  ]
+
+(*
+   For input we want to produce a map. The entry is a symbol as a string.
+   The value is the quantity produced with the list of inputs.
+ *)
+type chemical = { symbol : string; quantity : int }
+type reaction = { symbol : string; quantity : int; inputs : chemical list }
+
+module ChemicalMap = Map.Make (String)
+
+(** [chemical_of_string s] returns a chemical element from [s].
+
+    @raise Failure in case of error. *)
+let chemical_of_string s : chemical =
+  match String.split_on_char ' ' s with
+  | [ q; s ] -> { symbol = String.trim s; quantity = int_of_string q }
+  | _ -> failwith "Failed to extract chemical from string"
+
+(** [chemicals_of_inputs i] extracts a list of chemical from [i].
+    @raise Failure. *)
+let chemicals_of_inputs i =
+  String.split_on_char ',' i |> List.map String.trim
+  |> List.map chemical_of_string
+
+(** [reaction_of_string s] returns the reaction parsed from [s]. Example:
+    {[
+      reaction_of_string "9 ORE => 2 A"
+      = {
+          symbol = "A"
+        ; quantity = 2
+        ; inputs = [ { symbol = "ORE"; quantity = 9 } ]
+        }
+    ]}
+
+    @raise Failure if the reaction cannot be parsed. *)
+let reaction_of_string s =
+  let eq_idx = String.index s '=' in
+  let inputs = String.(sub s 0 eq_idx |> trim) in
+  let eq_idx = eq_idx + 2 in
+  (* skip '=' and '>' *)
+  let output = String.(sub s eq_idx (length s - eq_idx) |> trim) in
+  let quantity, symbol =
+    match String.split_on_char ' ' output with
+    | [ q; s ] -> (int_of_string q, String.trim s)
+    | _ -> failwith "Failed to separate quantity and symbol"
+  in
+  { symbol; quantity; inputs = chemicals_of_inputs inputs }
+
+(** [add_reaction map symbol quantity inputs] adds into [map] the [quantity] of
+    [symbol] produced by the [inputs].
+    @raise Failure if the sympbol is alread in the map. *)
+let add_reaction ~map reaction =
+  if ChemicalMap.mem reaction.symbol map then
+    failwith (Printf.sprintf "Symbol [%s] already set" reaction.symbol);
+  ChemicalMap.add reaction.symbol (reaction.quantity, reaction.inputs) map
+
+(** [fill_reactions inputs] build a map of reactions from a list of string
+    reaction.
+    @raise Failure. *)
+let fill_reactions (inputs : string list) =
+  List.fold_left
+    (fun m s -> add_reaction ~map:m (reaction_of_string s))
+    ChemicalMap.empty inputs

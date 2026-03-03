@@ -1,0 +1,15 @@
+(executable
+ (name main_day4_1)
+ (libraries day4))
+
+(executable
+ (name main_day4_2)
+ (libraries day4))
+
+(executable
+ (name main_day6)
+ (libraries day6))
+
+(executable
+ (name main_day14)
+ (libraries day14))

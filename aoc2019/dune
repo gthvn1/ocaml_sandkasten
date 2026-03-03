@@ -1,0 +1,6 @@
+(env
+ (release
+  (ocamlopt_flags
+   (:standard -g))
+  (c_flags
+   (:standard -fno-omit-frame-pointer))))
