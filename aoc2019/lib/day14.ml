@@ -109,3 +109,22 @@ let get_inputs ~map ~quantity ~symbol =
   in
   let extra = (batches * qty_produced) - quantity in
   (inputs, if extra = 0 then [] else [ { symbol; quantity = extra } ])
+
+type state = { wanted : chemical list; required : int; extra : chemical list }
+
+let one_step ~map ({ wanted; required; extra } : state) : state =
+  match wanted with
+  | [] -> { wanted; required; extra }
+  | c :: cs ->
+      (* TODO: before getting inputs we need to use [extra] chemicals if we can for [c] *)
+      let needed, leftover =
+        get_inputs ~map ~quantity:c.quantity ~symbol:c.symbol
+      in
+      let rec filter_ore (acc : chemical list) (ore : int) (l : chemical list) =
+        match l with
+        | [] -> (acc, ore)
+        | { symbol = "ORE"; quantity = q } :: xs -> filter_ore acc (ore + q) xs
+        | c :: xs -> filter_ore (c :: acc) ore xs
+      in
+      let a, o = filter_ore [] 0 needed in
+      { wanted = a @ cs; required = required + o; extra = extra @ leftover }
