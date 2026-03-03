@@ -112,6 +112,18 @@ let get_inputs ~map ~quantity ~symbol =
 
 type state = { wanted : chemical list; required : int; extra : chemical list }
 
+(** [one_step ~map ~state] performs one expansion step on [state].
+
+    If [state.wanted] is empty, the state is returned unchanged.
+
+    Otherwise, the first chemical in [wanted] is expanded using [map]. The
+    required inputs to produce it are computed via [get_inputs].
+
+    - Any required ORE is accumulated into [state.required].
+    - Non-ORE inputs are appended to [state.wanted].
+    - Any surplus production is added to [state.extra].
+
+    The updated state is then returned. *)
 let one_step ~map ({ wanted; required; extra } : state) : state =
   match wanted with
   | [] -> { wanted; required; extra }
