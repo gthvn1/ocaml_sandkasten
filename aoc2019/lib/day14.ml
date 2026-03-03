@@ -81,3 +81,31 @@ let fill_reactions (inputs : string list) =
   List.fold_left
     (fun m s -> add_reaction ~map:m (reaction_of_string s))
     ChemicalMap.empty inputs
+
+(** [get_inputs ~map ~quantity ~symbol] retuns the list of inputs required to
+    produce [quantity] of [symbol]. As a reaction can produce more than expected
+    it also returned the extra produced element.
+
+    @raise an exception if symbol cannot be produced.
+
+    Example considering the map is filled with sample_input.
+    - get_inputs ~map ~quantity:1 ~symbol:"FUEL" -> Some (
+      [{symbol="AB"; quantity=2}; {symbol="BC"; quantity=3}; {symbol="CA";
+       quantity=4}] , [])
+    - get_inputs ~map ~quantity:2 ~symbol:"AB" -> Some (
+      [{symbol="A"; quantity=6}; {symbol="B"; quantity=8}] , [])
+    - get_inputs ~map ~quantity:4 ~symbol:"C" -> Some (
+      [{symbol = "ORE"; quantity = 7}] , [{symbol = "C"; quantity = 1]) *)
+let get_inputs ~map ~quantity ~symbol =
+  let qty_produced, inputs = ChemicalMap.find symbol map in
+  let batches =
+    (quantity / qty_produced) + if quantity mod qty_produced = 0 then 0 else 1
+  in
+  let inputs : chemical list =
+    List.map
+      (fun ({ symbol; quantity = q } : chemical) ->
+        { symbol; quantity = batches * q })
+      inputs
+  in
+  let extra = (batches * qty_produced) - quantity in
+  (inputs, if extra = 0 then [] else [ { symbol; quantity = extra } ])
