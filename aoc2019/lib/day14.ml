@@ -19,6 +19,19 @@ let sample_input =
   ; "2 AB, 3 BC, 4 CA => 1 FUEL"
   ]
 
+let sample_input1 =
+  [
+    "157 ORE => 5 NZVS"
+  ; "165 ORE => 6 DCFZ"
+  ; "44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL"
+  ; "12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ"
+  ; "179 ORE => 7 PSHF"
+  ; "177 ORE => 5 HKGWZ"
+  ; "7 DCFZ, 7 PSHF => 2 XJWVT"
+  ; "165 ORE => 2 GPVTF"
+  ; "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT"
+  ]
+
 (*
    For input we want to produce a map. The entry is a symbol as a string.
    The value is the quantity produced with the list of inputs.
@@ -173,3 +186,8 @@ let one_step ~map ({ wanted; required; extra } : state) : state =
 
 let init_state : state =
   { wanted = [ { symbol = "FUEL"; quantity = 1 } ]; required = 0; extra = [] }
+
+let rec reactions_requires ~map state =
+  match one_step ~map state with
+  | { wanted = []; required; _ } -> required
+  | s' -> reactions_requires ~map s'
