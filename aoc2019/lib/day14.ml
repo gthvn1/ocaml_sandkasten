@@ -68,7 +68,7 @@ let reaction_of_string s =
 
 (** [add_reaction map symbol quantity inputs] adds into [map] the [quantity] of
     [symbol] produced by the [inputs].
-    @raise Failure if the sympbol is alread in the map. *)
+    @raise Failure if the symbol is alread in the map. *)
 let add_reaction ~map reaction =
   if ChemicalMap.mem reaction.symbol map then
     failwith (Printf.sprintf "Symbol [%s] already set" reaction.symbol);
@@ -112,6 +112,31 @@ let get_inputs ~map ~quantity ~symbol =
 
 type state = { wanted : chemical list; required : int; extra : chemical list }
 
+(** [use_extra c e] attempts to satisfy the requirement [c] using surplus
+    chemicals from [e].
+
+    If the surplus fully satisfies [c], it returns [(None, e')] where [e'] is
+    the updated list of remaining surplus chemicals.
+
+    Otherwise it returns [(Some c', e')] where [c'] is the remaining quantity
+    still required and [e'] is the updated surplus list. *)
+let use_extra (ch : chemical) (e : chemical list) :
+    chemical option * chemical list =
+  let rec aux (c : chemical) (keep : chemical list)
+      (not_processed : chemical list) =
+    match not_processed with
+    | [] -> ((if c.quantity = 0 then None else Some c), keep)
+    | c' :: xs as l ->
+        if c.quantity = 0 then (None, keep @ l)
+        else if c.symbol = c'.symbol then
+          match c.quantity - c'.quantity with
+          | 0 -> (None, keep @ xs)
+          | qty when qty > 0 -> aux { c with quantity = qty } keep xs
+          | qty -> (None, { c' with quantity = -qty } :: (keep @ xs))
+        else aux c (c' :: keep) xs
+  in
+  aux ch [] e
+
 (** [one_step ~map ~state] performs one expansion step on [state].
 
     If [state.wanted] is empty, the state is returned unchanged.
@@ -127,16 +152,24 @@ type state = { wanted : chemical list; required : int; extra : chemical list }
 let one_step ~map ({ wanted; required; extra } : state) : state =
   match wanted with
   | [] -> { wanted; required; extra }
-  | c :: cs ->
-      (* TODO: before getting inputs we need to use [extra] chemicals if we can for [c] *)
-      let needed, leftover =
-        get_inputs ~map ~quantity:c.quantity ~symbol:c.symbol
-      in
-      let rec filter_ore (acc : chemical list) (ore : int) (l : chemical list) =
-        match l with
-        | [] -> (acc, ore)
-        | { symbol = "ORE"; quantity = q } :: xs -> filter_ore acc (ore + q) xs
-        | c :: xs -> filter_ore (c :: acc) ore xs
-      in
-      let a, o = filter_ore [] 0 needed in
-      { wanted = a @ cs; required = required + o; extra = extra @ leftover }
+  | c :: cs -> (
+      (* Before getting inputs try to use [extra] chemicals *)
+      match use_extra c extra with
+      | None, e -> { wanted = cs; required; extra = e }
+      | Some c, e ->
+          let needed, leftover =
+            get_inputs ~map ~quantity:c.quantity ~symbol:c.symbol
+          in
+          let rec filter_ore (acc : chemical list) (ore : int)
+              (l : chemical list) =
+            match l with
+            | [] -> (acc, ore)
+            | { symbol = "ORE"; quantity = q } :: xs ->
+                filter_ore acc (ore + q) xs
+            | c :: xs -> filter_ore (c :: acc) ore xs
+          in
+          let a, o = filter_ore [] 0 needed in
+          { wanted = a @ cs; required = required + o; extra = e @ leftover })
+
+let init_state : state =
+  { wanted = [ { symbol = "FUEL"; quantity = 1 } ]; required = 0; extra = [] }
