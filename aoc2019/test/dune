@@ -1,0 +1,5 @@
+(executable
+  (name main_day4_1)
+  (libraries day4))
+
+(cram)
