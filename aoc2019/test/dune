@@ -6,4 +6,9 @@
   (name main_day6)
   (libraries day6))
 
-(cram)
+(executable
+  (name main_day14)
+  (libraries day14))
+
+(cram
+  (deps main_day4_1.exe main_day6.exe))
