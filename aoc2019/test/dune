@@ -2,4 +2,8 @@
   (name main_day4_1)
   (libraries day4))
 
+(executable
+  (name main_day6)
+  (libraries day6))
+
 (cram)
