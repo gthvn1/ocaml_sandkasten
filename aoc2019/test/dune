@@ -1,14 +1,14 @@
 (executable
-  (name main_day4_1)
-  (libraries day4))
+ (name main_day4_1)
+ (libraries day4))
 
 (executable
-  (name main_day6)
-  (libraries day6))
+ (name main_day6)
+ (libraries day6))
 
 (executable
-  (name main_day14)
-  (libraries day14))
+ (name main_day14)
+ (libraries day14))
 
 (cram
-  (deps main_day4_1.exe main_day6.exe))
+ (deps main_day4_1.exe main_day6.exe))
